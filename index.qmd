@@ -1,11 +1,39 @@
----
-title: "tiagolafonso.github.io"
----
+# Introdução à Econometria Aplicada com R {.unnumbered}
 
-This is a Quarto website.
+Bem-vindos ao livro "Introdução à Econometria Aplicada com R". Este livro foi concebido para estudantes e investigadores que desejam aprender econometria utilizando a linguagem de programação R.
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+## Objectivos do Livro {#sec-objectivos}
 
-```{r}
-1 + 1
-```
+Este livro tem como objectivos:
+
+- Proporcionar uma introdução sólida aos conceitos fundamentais da econometria
+- Ensinar a aplicação prática de técnicas econométricas utilizando R
+- Desenvolver competências de análise de dados económicos
+- Fornecer exemplos práticos com dados reais
+
+## Estrutura do Livro {#sec-estrutura}
+
+O livro está organizado da seguinte forma:
+
+- **Capítulo 0**: Pré-requisitos para Econometria
+- **Capítulo 1**: Breve Introdução ao R
+- **Capítulo 2**: Estrutura de Dados Económicos
+- **Capítulo 3**: Regressão Linear
+- **Capítulo 4**: Pressupostos da Regressão Linear
+- **Capítulo 5**: Avaliação dos Modelos de Regressão
+- **Capítulo 6**: Extensões dos Modelos de Regressão
+- **Capítulo 7**: Modelos de Variável Dependente Limitada
+
+## Pré-requisitos {#sec-prerequisitos}
+
+Para aproveitar ao máximo este livro, recomenda-se:
+
+- Conhecimentos básicos de estatística
+- Familiaridade com conceitos de matemática ao nível do ensino secundário
+- Interesse em análise de dados económicos
+
+Não é necessário experiência prévia com R, pois o livro inclui uma introdução à linguagem.
+
+## Recursos Adicionais {#sec-recursos}
+
+Todos os dados utilizados nos exemplos estão disponíveis junto com este livro. Os códigos R apresentados podem ser executados directamente, permitindo uma aprendizagem prática e interactiva.

@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>capitulo-04-pressupostos-regressao – tiagolafonso.github.io</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ddd961a2510921635943dfbbd19534c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">tiagolafonso.github.io</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sec-pressupostos-regressao" id="toc-sec-pressupostos-regressao" class="nav-link active" data-scroll-target="#sec-pressupostos-regressao">Pressupostos da Regressão</a>
+  <ul class="collapse">
+  <li><a href="#sec-pressupostos-linearidade" id="toc-sec-pressupostos-linearidade" class="nav-link" data-scroll-target="#sec-pressupostos-linearidade">Pressuposto: Linearidade</a></li>
+  <li><a href="#sec-pressupostos-variação" id="toc-sec-pressupostos-variação" class="nav-link" data-scroll-target="#sec-pressupostos-variação">Pressuposto: As variáveis independentes têm alguma variação</a></li>
+  <li><a href="#sec-pressupostos-homocedasticidade" id="toc-sec-pressupostos-homocedasticidade" class="nav-link" data-scroll-target="#sec-pressupostos-homocedasticidade">Pressuposto: Homocedasticidade dos erros</a>
+  <ul class="collapse">
+  <li><a href="#o-que-é" id="toc-o-que-é" class="nav-link" data-scroll-target="#o-que-é">O que é?</a></li>
+  <li><a href="#quais-as-consequências" id="toc-quais-as-consequências" class="nav-link" data-scroll-target="#quais-as-consequências">Quais as consequências?</a></li>
+  <li><a href="#como-detetar-a-heterocedasticidade-dos-erros" id="toc-como-detetar-a-heterocedasticidade-dos-erros" class="nav-link" data-scroll-target="#como-detetar-a-heterocedasticidade-dos-erros">Como detetar a heterocedasticidade dos erros?</a></li>
+  <li><a href="#como-corrigir-a-heterocedasticidade" id="toc-como-corrigir-a-heterocedasticidade" class="nav-link" data-scroll-target="#como-corrigir-a-heterocedasticidade">Como corrigir a heterocedasticidade</a></li>
+  </ul></li>
+  <li><a href="#sec-pressuposto-ausencia-autocorrelacao" id="toc-sec-pressuposto-ausencia-autocorrelacao" class="nav-link" data-scroll-target="#sec-pressuposto-ausencia-autocorrelacao">Pressuposto: Ausência de Autocorrelação dos erros</a>
+  <ul class="collapse">
+  <li><a href="#o-que-é-1" id="toc-o-que-é-1" class="nav-link" data-scroll-target="#o-que-é-1">O que é?</a></li>
+  <li><a href="#quais-as-consequências-1" id="toc-quais-as-consequências-1" class="nav-link" data-scroll-target="#quais-as-consequências-1">Quais as consequências?</a></li>
+  <li><a href="#como-detetar-a-autocorrelação-dos-erros" id="toc-como-detetar-a-autocorrelação-dos-erros" class="nav-link" data-scroll-target="#como-detetar-a-autocorrelação-dos-erros">Como detetar a autocorrelação dos erros?</a></li>
+  <li><a href="#como-corrigir-a-autocorrelação" id="toc-como-corrigir-a-autocorrelação" class="nav-link" data-scroll-target="#como-corrigir-a-autocorrelação">Como corrigir a autocorrelação?</a></li>
+  </ul></li>
+  <li><a href="#sec-pressuposto-normalidade-erros" id="toc-sec-pressuposto-normalidade-erros" class="nav-link" data-scroll-target="#sec-pressuposto-normalidade-erros">Pressuposto: Normalidade dos Erros</a>
+  <ul class="collapse">
+  <li><a href="#o-que-é-2" id="toc-o-que-é-2" class="nav-link" data-scroll-target="#o-que-é-2">O que é?</a></li>
+  <li><a href="#quais-as-consequências-2" id="toc-quais-as-consequências-2" class="nav-link" data-scroll-target="#quais-as-consequências-2">Quais as consequências?</a></li>
+  <li><a href="#como-verificar-a-não-normalidade-dos-erros" id="toc-como-verificar-a-não-normalidade-dos-erros" class="nav-link" data-scroll-target="#como-verificar-a-não-normalidade-dos-erros">Como verificar a não normalidade dos erros?</a></li>
+  <li><a href="#como-lidar-com-a-não-normalidade-dos-erros" id="toc-como-lidar-com-a-não-normalidade-dos-erros" class="nav-link" data-scroll-target="#como-lidar-com-a-não-normalidade-dos-erros">Como lidar com a não normalidade dos erros?</a></li>
+  </ul></li>
+  <li><a href="#sec-pressuposto-multicolinearidade" id="toc-sec-pressuposto-multicolinearidade" class="nav-link" data-scroll-target="#sec-pressuposto-multicolinearidade">Pressuposto: Ausência de Multicolinearidade</a>
+  <ul class="collapse">
+  <li><a href="#o-que-é-3" id="toc-o-que-é-3" class="nav-link" data-scroll-target="#o-que-é-3">O que é?</a></li>
+  <li><a href="#quais-as-consequências-3" id="toc-quais-as-consequências-3" class="nav-link" data-scroll-target="#quais-as-consequências-3">Quais as consequências?</a></li>
+  <li><a href="#como-diagnosticar" id="toc-como-diagnosticar" class="nav-link" data-scroll-target="#como-diagnosticar">Como diagnosticar?</a></li>
+  <li><a href="#como-lidar-com-a-multicolinearidade" id="toc-como-lidar-com-a-multicolinearidade" class="nav-link" data-scroll-target="#como-lidar-com-a-multicolinearidade">Como lidar com a multicolinearidade?</a></li>
+  </ul></li>
+  <li><a href="#sec-pressuposto-valor-esperado-erro-zero" id="toc-sec-pressuposto-valor-esperado-erro-zero" class="nav-link" data-scroll-target="#sec-pressuposto-valor-esperado-erro-zero">Pressuposto: Valor Esperado do Erro é Zero</a></li>
+  <li><a href="#sec-pressuposto-variaveis-independentes-nao-estocasticas" id="toc-sec-pressuposto-variaveis-independentes-nao-estocasticas" class="nav-link" data-scroll-target="#sec-pressuposto-variaveis-independentes-nao-estocasticas">Pressuposto: As variáveis independentes não são estocásticas</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<section id="sec-pressupostos-regressao" class="level1">
+<h1>Pressupostos da Regressão</h1>
+<p>Introdução {#sec-pressupostos-intro}</p>
+<p>O modelo clássico de regressão linear tem alguns pressupostos que terão de ser cumpridos para que as estimativas por mínimos quadrados ordinários (OLS) sejam válidas. Para que as estimativas por mínimos quadrados ordinários (OLS) sejam válidas e tenham as propriedades desejadas (não enviesadas, eficientes, consistentes), é necessário que se verifiquem determinados pressupostos.</p>
+<p>Algumas definições importantes incluem:</p>
+<ul>
+<li><em>O que é uma estimativa enviesada?</em></li>
+</ul>
+<p>Uma estimativa é considerada enviesada quando, em média, não coincide com o valor verdadeiro do parâmetro que está a ser estimado. Por outras palavras, uma estimativa é enviesada quando tende a sobrestimar ou subestimar sistematicamente o valor real.</p>
+<ul>
+<li><em>O que é uma estimativa eficiente?</em></li>
+</ul>
+<p>Uma estimativa é considerada eficiente quando, entre todas as estimativas não enviesadas, tem a menor variância possível.</p>
+<ul>
+<li><em>O que é uma estimativa consistente?</em></li>
+</ul>
+<p>Uma estimativa é considerada consistente quando, à medida que o tamanho da amostra aumenta, a estimativa converge para o valor verdadeiro do parâmetro que está a ser estimado.</p>
+<section id="sec-pressupostos-linearidade" class="level2">
+<h2 class="anchored" data-anchor-id="sec-pressupostos-linearidade">Pressuposto: Linearidade</h2>
+<p>A linearidade refere-se à relação linear entre as variáveis independentes e a variável dependente. O modelo deve ser linear nos parâmetros:</p>
+<p><span id="eq-linearidade-parametros"><span class="math display">\[
+Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \cdots + \beta_k X_{ki} + u_i
+\tag{1}\]</span></span></p>
+<p>Para verificar a linearidade vamos utilziar os dados <code>hprice3</code> da biblioteca <code>wooldridge</code>, que contém informações sobre preços de casas e várias características associadas. A variável dependente é o preço das casas (<code>price</code>) e a variável independente é a distância até à autoestrada (<code>dist</code>). Vamos visualizar a relação entre estas duas variáveis através de um gráfico de dispersão.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wooldridge)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"hprice3"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Gráfico de dispersão ggplot2</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hprice3, <span class="fu">aes</span>(<span class="at">x =</span> dist, <span class="at">y =</span> price)) <span class="sc">+</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">col =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Verificar Linearidade"</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Distância até à Autoestrada"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Preço das Casas"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/check_linearity-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Porque razão não existe uma relação linear entre a distância até à autoestrada e o preço das casas?</li>
+</ul>
+<p>A resposta a esta pergunta pode ser mais óbvia do que parece e pode ser respondida através da definição de externalidade. Se a autoestrada for demasiado longe o impacto pode ser negativo (falta de comodidade) e se for demasiado perto o impacto também pode ser negativo (ruído, poluição, trânsito excessivo). Já se a distância for moderada, o impacto pode ser positivo, uma vez que existe a acessibilidade sem as externalidades negativas. Portanto, neste caso, o modelo linear não é adequado.</p>
+<p>Uma relação entre duas variáveis mais próxima da linearidade poderia ser o número de quartos (rooms) e o preço.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(hprice3, <span class="fu">aes</span>(<span class="at">x =</span> rooms, <span class="at">y =</span> price)) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">col =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Verificar Linearidade"</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Número de Quartos"</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Preço das Casas"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/linear-age-price-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-pressupostos-variação" class="level2">
+<h2 class="anchored" data-anchor-id="sec-pressupostos-variação">Pressuposto: As variáveis independentes têm alguma variação</h2>
+<p>As variáveis independentes devem ter variação, ou seja, não podem ser constantes. Este pressuposto é importante porque a ausência de variação nas variáveis independentes torna impossível estimar o efeito dessas variáveis na variável dependente. Normalmente é o coeficiente de variação (CV) que é utilizado para medir a variação relativa de uma variável. O CV é definido como a razão entre o desvio padrão e a média da variável: <span id="eq-coeficiente_variacao"><span class="math display">\[
+CV = \frac{\sigma}{\mu}
+\tag{2}\]</span></span></p>
+<p>em que <span class="math inline">\(\sigma\)</span> é o desvio padrão e <span class="math inline">\(\mu\)</span> é a média da variável.</p>
+<p>Para calcular o coeficiente de variação para a variável <code>price</code>, podemos usar o seguinte código:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular coeficiente de variação para a variável price</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>cv_price <span class="ot">&lt;-</span> <span class="fu">sd</span>(hprice3<span class="sc">$</span>price) <span class="sc">/</span> <span class="fu">mean</span>(hprice3<span class="sc">$</span>price)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>cv_price</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4497756</code></pre>
+</div>
+</div>
+<p>O coeficiente de variação é uma medida sem dimensão, o que significa que não depende das unidades de medida da variável. Um CV próximo de zero indica pouca variação, enquanto um CV maior indica maior variação. Em geral, um CV superior a 0,1 (10%) pode ser considerado suficiente para garantir variação adequada na variável independente.</p>
+</section>
+<section id="sec-pressupostos-homocedasticidade" class="level2">
+<h2 class="anchored" data-anchor-id="sec-pressupostos-homocedasticidade">Pressuposto: Homocedasticidade dos erros</h2>
+<section id="o-que-é" class="level3">
+<h3 class="anchored" data-anchor-id="o-que-é">O que é?</h3>
+<p>A homocedasticidade é medida nos resíduos do modelo. Por definição, a homocedasticidade é quando a variância do termo de erro é constante ao longo da amostra:</p>
+<p><span id="eq-homocedasticidade"><span class="math display">\[
+Var(u_i | X_{1i}, X_{2i}, \ldots, X_{ki}) = \sigma^2
+\tag{3}\]</span></span></p>
+<p>Quando a variância do termo de erro não é constante ao longo da amostra, dizemos que há heterocedasticidade. Ou seja:</p>
+<p><span id="eq-heterocedasticidade"><span class="math display">\[
+Var(u_i | X_{1i}, X_{2i}, \ldots, X_{ki}) = \sigma^2_i
+\tag{4}\]</span></span></p>
+<p>O que distingue as duas situações é o índice <span class="math inline">\(i\)</span> na variância.</p>
+<p>Exemplo gráfico de homocedasticidade entre <code>Y</code>e <code>X</code>:</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: zoo</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'zoo'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/homocedasticidade-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Como podemos observar, a variância dos erros é constante ao longo de uma faixa de valores de <code>X</code>, o que caracteriza a homocedasticidade.</p>
+<p>Exemplo gráfico de heterocedasticidade entre <code>Y</code>e <code>Z</code>:</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/heterocedasticidade-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Podemos observar que a variância dos erros aumenta com os valores de <code>X</code>, o que caracteriza a heterocedasticidade.</p>
+</section>
+<section id="quais-as-consequências" class="level3">
+<h3 class="anchored" data-anchor-id="quais-as-consequências">Quais as consequências?</h3>
+<p>A heterocedasticidade pode levar a estimativas ineficientes e testes de hipóteses inválidos como a significância estatística dos coeficientes. A heterocedasticidade dos erros subestima a variância dos estimadores e com isso faz com que os estimadores dos OLS não sejam eficientes. Também leva a valores elevados das estatísticas. Apesar disso, continuam a ser consistente e não enviesados.</p>
+</section>
+<section id="como-detetar-a-heterocedasticidade-dos-erros" class="level3">
+<h3 class="anchored" data-anchor-id="como-detetar-a-heterocedasticidade-dos-erros">Como detetar a heterocedasticidade dos erros?</h3>
+<p>A heterocedasticidade pode ser detectada através de gráficos e testes.</p>
+<section id="gráficos-de-dispersão" class="level4">
+<h4 class="anchored" data-anchor-id="gráficos-de-dispersão">Gráficos de Dispersão</h4>
+<p>Nestes exemplo vamos utilizar os dados <code>hprice1</code> da biblioteca <code>wooldridge</code>. Carregar os dados:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#limpar ambiente</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#carregar bibliotecas</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wooldridge)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#carregar dados</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"hprice1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Para detetar graficamente a heterocedasticidade necessitamos do valor do resíduo ao quadrado (<span class="math inline">\(e_i^2\)</span>) no eixo das ordenadas e dos valores previsto da variável dependente <span class="math inline">\(\hat{price}_i\)</span> no eixo das abscissas. O modelo base será: $ {price}_i = _0 + _1 lotsize_i + +_2 sqrft_i + _3 bdrms + u_i $. Vamos estimar o modelo, obter os resíduos, calcular o quadrado dos resíduos e os valores previstos.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar modelo</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>modelo <span class="ot">&lt;-</span> <span class="fu">lm</span>(price <span class="sc">~</span> lotsize <span class="sc">+</span> sqrft <span class="sc">+</span> bdrms, </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> hprice1)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>dados_het <span class="ot">&lt;-</span> hprice1 <span class="sc">%&gt;%</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">valores_previstos =</span> <span class="fu">fitted</span>(modelo),</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">residuos =</span> <span class="fu">residuals</span>(modelo),</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">residuos_sq =</span> residuos<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Com os dados (no data frame <code>dados_het</code>) podemos criar o gráfico de dispersão:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Gráfico de dispersão: resíduos ao quadrado vs valores previstos</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dados_het, <span class="fu">aes</span>(<span class="at">x =</span> valores_previstos, <span class="at">y =</span> residuos_sq)) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">color =</span> <span class="st">"steelblue"</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Gráfico de Dispersão: Resíduos ao Quadrado vs Valores Previsto"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Valores Previsto"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Resíduos ao Quadrado"</span>) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/ggplot_residuos-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Também é possivel obter o mesmo resultado com a função <code>plot()</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Gráfico de dispersão: resíduos ao quadrado vs valores previstos</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dados_het<span class="sc">$</span>valores_previstos, dados_het<span class="sc">$</span>residuos_sq,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Valores Previsto"</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Resíduos ao Quadrado"</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Gráfico de Dispersão: Resíduos ao Quadrado vs Valores Previsto"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"steelblue"</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">1.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/plot_residuos-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Em qualquer um dos gráfico podemos concluir que existe heterocedasticidade. Não é possível traçar uma linha completamente horizontal para representar as obervações do gráfico.</p>
+</section>
+<section id="testes-de-heterocedasticidade" class="level4">
+<h4 class="anchored" data-anchor-id="testes-de-heterocedasticidade">Testes de heterocedasticidade</h4>
+<p>Os testes de heterocedasticidade seguem um processo semelhante, o mais comum é:</p>
+<ol type="1">
+<li>Estimar o modelo e obter os resíduos (<span class="math inline">\(e_i\)</span>).</li>
+<li>Estimar a regressão auxiliar específica do teste.</li>
+<li>Calcular o <span class="math inline">\(LM_{stat}=n*R^2\)</span> da regressão auxiliar.</li>
+<li>Comparar o valor do <span class="math inline">\(LM_{stat}\)</span> com o valor crítico da distribuição ou o valor de probabilidade <span class="math inline">\(\chi^2\)</span> com graus de liberdade igual ao número de variáveis explicativas na regressão auxiliar (sem incluir a constante).</li>
+</ol>
+</section>
+<section id="teste-de-heterocedasticidade-condicional" class="level4">
+<h4 class="anchored" data-anchor-id="teste-de-heterocedasticidade-condicional">Teste de Heterocedasticidade condicional</h4>
+<p>OA heterocedasticidade condicional ocorre quando a variância dos erros depende das informações passadas, ou seja, a variância dos erros num determinado período <span class="math inline">\(t\)</span> pode ser influenciada pelos erros em períodos anteriores <span class="math inline">\(t-1, t-2, \dots, t-n\)</span>. Este tipo de heterocedasticidade é comum em dados financeiros, onde a volatilidade dos retornos pode variar ao longo do tempo. pode ser diagnosticada com o Teste de ARCH (Autoregressive Conditional Heteroskedasticity). Graficamente a heterocedasticidade condicional tem um padrão de “clusters” de volatilidade, onde períodos de elevada volatilidade são seguidos por mais períodos de elevada volatilidade, e o mesmo ocorre para períodos de baixa volatilidade. Exemplo gráfico:</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'gridExtra'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    combine</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/arch-example-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="como-corrigir-a-heterocedasticidade" class="level3">
+<h3 class="anchored" data-anchor-id="como-corrigir-a-heterocedasticidade">Como corrigir a heterocedasticidade</h3>
+<p>Existem algumas abordagens para lidar com a heterocedasticidade:</p>
+<ol type="1">
+<li><p><strong>Transformações de Variáveis</strong>: Aplicar transformações nas variáveis dependentes ou independentes pode ajudar a estabilizar a variância. Por exemplo, a transformação logarítmica é frequentemente utilizada.</p></li>
+<li><p><strong>Ajustar a amostra ou adicionar substituir variáveis</strong>: Rever a seleção de variáveis e considerar a inclusão de variáveis omitidas que possam estar relacionadas à variância dos erros.</p></li>
+<li><p><strong>Modelos de Regressão Robustos</strong>: Ajustar os desvios padrão das estimativas dos coeficientes para ter em consideração a heterocedasticidade, como os erros padrão de White.</p></li>
+<li><p><strong>Método Generalizados dos Mínimos Quadrados</strong>: Que consiste em dividir todos os termos da equação de regressão pelo desvio padrão dos resíduos.</p></li>
+</ol>
+<p>No método GLS, os resíduos são ponderados de forma a minimizar a heterocedasticidade. Considerando o seguinte modelo:</p>
+<p><span id="eq-ols-1"><span class="math display">\[
+Y_i = \beta_0 + \beta_1 X_i + \beta_2 X_i^2 + u_i
+\tag{5}\]</span></span></p>
+<p>onde a variância do erro é dada por <span class="math inline">\(Var(u_i) = \sigma^2_i\)</span>. Então dividindo os termos da equaação pelo desvio padrão dos erros temos:</p>
+<p><span id="eq-gls"><span class="math display">\[
+Y_i = \beta_0(1/\rho_i) + \beta_1(1/\rho_i)X_i + \beta_2(1/\rho_i)X_i^2 + \mu_i(1/\rho_i)
+\tag{6}\]</span></span></p>
+<p>ou:</p>
+<p><span id="eq-gls-2"><span class="math display">\[
+Y'_i = \beta_0' + \beta_1'X_i + \beta_2'X_i^2 +\mu'_i
+\tag{7}\]</span></span></p>
+<p>ou seja, <span class="math inline">\(Var(\mu'_i) = Var(\mu_i(/\rho_i))=Var(\mu_i)/\rho^2_i=1\)</span>. Com isto a variância dos erros transformados é constante.</p>
+<ol start="5" type="1">
+<li><strong>Método Ponderado do Mínimos Quadrados</strong>: Que consiste em atribuir ponderadores diferentes termos da equação.</li>
+</ol>
+<p>Neste método, os erros são ponderados de acordo com a variância dos resíduos, de forma que as observações com maior variância tenham menor peso na estimação dos parâmetros. Ou seja, as observações com menor variância terão maior ponderação. Considerando o seguinte modelo:</p>
+<p><span id="eq-ols-2"><span class="math display">\[
+Y_i = \beta_0 + \beta_1 X_i + \beta_2 X_i^2 + u_i
+\tag{8}\]</span></span></p>
+<p>com o ponderador <span class="math inline">\(w_i\)</span>:</p>
+<p><span id="eq-ols-2"><span class="math display">\[
+w_i {Y_i} = w_i \beta_0 + \beta_1 w_i X_i + \beta_2 w_i X_{2i} + u_i w_i
+\tag{9}\]</span></span></p>
+<p>A aplicação destes métodos será desenvolvida no <strong>?@sec-extensoes-regressao</strong>.</p>
+</section>
+</section>
+<section id="sec-pressuposto-ausencia-autocorrelacao" class="level2">
+<h2 class="anchored" data-anchor-id="sec-pressuposto-ausencia-autocorrelacao">Pressuposto: Ausência de Autocorrelação dos erros</h2>
+<section id="o-que-é-1" class="level3">
+<h3 class="anchored" data-anchor-id="o-que-é-1">O que é?</h3>
+<p>A autocorrelação ocorre quando os resíduos de um modelo de regressão não são independentes entre si, ou seja, há correlação entre os erros em diferentes observações. O modelo clássico de regressão linear assume que as covariâncias e correlações entre os erros são zero:</p>
+<p><span id="eq-ausencia-autocorrelacao"><span class="math display">\[
+Cov(u_i, u_j | X) = 0 \text{ para } i \neq j
+\tag{10}\]</span></span></p>
+<p>A covariância é uma medida que indica a direção da relação linear entre duas variáveis. No contexto da autocorrelação, a covariância entre os erros em diferentes períodos de tempo deve ser zero para que os erros sejam considerados não correlacionados. A autocorrelação dos erros é mais provável em séries temporais. Já nos dados seccionais podemos reordenar os dados sem alterar os resultados.</p>
+<p>Umas das principais causas da autocorrelação é a omissão de variáveis relevantes no modelo. Por exemplo, temos um modelo em que <span class="math inline">\(Y\)</span> é a variável dependente e <span class="math inline">\(X_1\)</span> e <span class="math inline">\(X_2\)</span> são as variáveis independentes. Se omitirmos uma variável relevante, como <span class="math inline">\(X_3\)</span>, essa informação vai ser capturada pelos erros do modelo e ainda se essa variável tiver tendência (como muitas variáveis em economia) então <span class="math inline">\(X_{3t}\)</span> depende de <span class="math inline">\(X_{3t-1}\)</span>, <span class="math inline">\(X_{3t-p}\)</span>… Consequentemente, os erros também vão depender de momentos anteriores, ou seja, <span class="math inline">\(u_t\)</span> vai depender de <span class="math inline">\(u_{t-1}\)</span>, <span class="math inline">\(u_{t-p}\)</span>…</p>
+<p>Outra possível causa para a existência de autocorrelação é a má especificação dos modelos. Quanto a relação de <span class="math inline">\(Y\)</span> e <span class="math inline">\(X\)</span> não é linear e utilizamos um modelo linear (<span class="math inline">\(Y = \beta_0 + \beta_1 X + u\)</span>) em vez de um não linear (<span class="math inline">\(Y=\beta_0 + \beta_1 X + \beta_2 X^2 + u\)</span>). Os erros obtidos do modelo linear também podem apresentar autocorrelação.</p>
+<p>Um erro sistematico de medição também pode ser uma das razões para a existência de autocorrelação. Por exemplo, num inventário de um armazém que é atualizado de x em x tempo ocorrer um erro sistemático na contagem, esse erro vai ser refletido nos erros seguintes no inventário acumulado.</p>
+<p>A autocorrelação pode ser de várias ordens. A mais comum é a de ordem 1. Para o modelo:</p>
+<p><span id="eq-modelo-autocorr"><span class="math display">\[
+Y_t = \beta_0 + \beta_1 X_t + u_t
+\tag{11}\]</span></span></p>
+<p>em que:</p>
+<ul>
+<li><span class="math inline">\(Y_t\)</span> é a variável dependente no tempo <span class="math inline">\(t\)</span>.</li>
+<li><span class="math inline">\(X_t\)</span> é a variável independente no tempo <span class="math inline">\(t\)</span>.</li>
+<li><span class="math inline">\(u_t\)</span> é o termo de erro no tempo <span class="math inline">\(t\)</span>.</li>
+</ul>
+<p>Na auutocorrelação de ordem 1 temos:</p>
+<p><span id="eq-autocorr-1"><span class="math display">\[
+\mu_i = \rho \mu_{i-1} + \epsilon_i
+\tag{12}\]</span></span></p>
+<p>ou seja, o erro no tempo <span class="math inline">\(t\)</span> depende do erro desfasado um vez (<span class="math inline">\(t-1\)</span>). O <span class="math inline">\(\rho\)</span> é o coeficiente de autocorrelação que mede a força e a direção da relação entre dos erros em diferentes períodos de tempo. O valor de <span class="math inline">\(\rho\)</span> varia entre -1 e 1. Com isso podemos ter três casos:</p>
+<ol type="1">
+<li><strong><span class="math inline">\(\rho = 0\)</span></strong>: Não existe autocorrelação.</li>
+<li><strong><span class="math inline">\(0 &lt; \rho &lt; 1\)</span></strong>: Autocorrelação positiva (erros positivos tendem a ser seguidos por erros positivos).</li>
+<li><strong><span class="math inline">\(-1 &lt; \rho &lt; 0\)</span></strong>: Autocorrelação negativa (erros positivos tendem a ser seguidos por erros negativos).</li>
+</ol>
+<p>Exemplo gráfico sem autocorrelação, <span class="math inline">\(\rho = 0\)</span>:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/sem-autocorrelacao-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>O declive do segundo gráfico é igual a 0, o que indica que não há relação entre o erro atual e o erro desfasado.</p>
+<p>Exemplo gráfico de Autocorrelação Positiva, <span class="math inline">\(\rho &gt; 0\)</span>:</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/autocorrelacao-positiva-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>No 1º gráfico podemos observar, de forma genérica, que os erros positivos tendem a ser seguidos por erros positivos e os erros negativos por erros negativos. No 2º gráfico, a relação entre o erro atual e o erro desfasado é capturada pela linha de regressão, que mostra uma tendência positiva.</p>
+<p>Exemplo gráfico de Autocorrelação Negativa, <span class="math inline">\(\rho &lt; 0\)</span>:</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/aurtocorrelacao-negativa-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>No 1º gráfico podemos observar, de forma genérica, que os erros positivos tendem a ser seguidos por erros negativos e os erros negativos por erros positivos. No 2º gráfico, a relação entre o erro atual e o erro desfasado é capturada pela linha de regressão, que mostra uma tendência negativa.</p>
+<p>A autocorrelação pode ser de outras ordens:</p>
+<ul>
+<li>ordem 2:</li>
+</ul>
+<p><span id="eq-autocorrelacao-2"><span class="math display">\[
+\mu_t = \rho_1 \mu_{t-1} + \rho_2 \mu_{t-2} + \epsilon_t
+\tag{13}\]</span></span></p>
+<ul>
+<li>ordem p:</li>
+</ul>
+<p><span id="eq-autocorrelacao-p"><span class="math display">\[
+\mu_t = \sum_{i=1}^{p} \rho_i \mu_{t-i} + \epsilon_t
+\tag{14}\]</span></span></p>
+</section>
+<section id="quais-as-consequências-1" class="level3">
+<h3 class="anchored" data-anchor-id="quais-as-consequências-1">Quais as consequências?</h3>
+<p>Os estimadores do MMQ permanecem não enviesados e consistentes. Contudo, são ineficientes, pois a presença de autocorrelação altera a variância dos estimadores. Com isto, os testes de hipóteses podem ser inválidos, os resultados podem “parecer” melhores do que realmente são (variáveis estatisticamente significantes quando na realidade não o são) O <span class="math inline">\(R^2\)</span> também pode ser inflacionado.</p>
+</section>
+<section id="como-detetar-a-autocorrelação-dos-erros" class="level3">
+<h3 class="anchored" data-anchor-id="como-detetar-a-autocorrelação-dos-erros">Como detetar a autocorrelação dos erros?</h3>
+<p>A autocorrelação pode ser detectada de duas formas, tal como a heterocedasticidade: gráficamente e através de teste formais. Os gráficos de dispersão dos resíduos com <span class="math inline">\(u_t\)</span> em função de <span class="math inline">\(u_{t-1}\)</span> podem revelar padrões de autocorrelação, como visto anteriormente. Existem alguns testes formais em que a aplicação depende do contexto como a presença de desfasamentos na variavel dependente ou nas dependentes. A hipótese nula é a ausência de autocorrelação. Os teste formais serão aplicados mais à frente na <strong>?@sec-avaliacao-modelos</strong>.</p>
+</section>
+<section id="como-corrigir-a-autocorrelação" class="level3">
+<h3 class="anchored" data-anchor-id="como-corrigir-a-autocorrelação">Como corrigir a autocorrelação?</h3>
+<p>A autocorrelação pode ser corrigida através de métodos como o Cochrane-Orcutt ou da transformação dos dados. Será abordado mais à frente no <strong>?@sec-extensoes-regressao</strong> juntamente com a correção heterocedasticidade.</p>
+</section>
+</section>
+<section id="sec-pressuposto-normalidade-erros" class="level2">
+<h2 class="anchored" data-anchor-id="sec-pressuposto-normalidade-erros">Pressuposto: Normalidade dos Erros</h2>
+<section id="o-que-é-2" class="level3">
+<h3 class="anchored" data-anchor-id="o-que-é-2">O que é?</h3>
+<p>Os erros do modelo devem seguir uma distribuição normal. Este pressuposto é especialmente importante aquando da realização de testes de hipóteses e construção de intervalos de confiança. A normalidade dos erros é expressa como:</p>
+<p><span id="eq-normalidade-erros"><span class="math display">\[
+\epsilon_i \sim N(\mu, \sigma^2)
+\tag{15}\]</span></span></p>
+<p>em que: - <span class="math inline">\(\epsilon_i\)</span> são os erros do modelo - <span class="math inline">\(N(\mu, \sigma^2)\)</span> indica que os erros seguem uma distribuição normal com média <span class="math inline">\(\mu\)</span> e variância <span class="math inline">\(\sigma^2\)</span></p>
+<p>Para os testes t e F tenham as propriedades (em pequenas amostras), assume-se que os erros seguem uma distribuição normal, para que os resultados sejam válidos. No entanto, em grandes amostras, o Teorema Central do Limite garante que a distribuição dos erros tende a ser normal, independentemente da distribuição original.</p>
+<ul>
+<li>Porque a normalidade é tão popular?</li>
+</ul>
+<p>A normalidade dos erros tem uma interpretação intuitiva, a a ideia de erros simétricos (curtose) em torno de uma média. Existe também uma conveniência histórica na utilização da normalidade, uma vez que muitos métodos estatísticos clássicos foram desenvolvidos considerando este pressuposto.</p>
+<p>Exemplo gráfico de normalidade e não normalidade:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/normalidade-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="quais-as-consequências-2" class="level3">
+<h3 class="anchored" data-anchor-id="quais-as-consequências-2">Quais as consequências?</h3>
+<p>Como mencionado anteriormente, a violação do pressuposto de normalidade pode levar a inferências estatísticas inválidas, especialmente em testes de hipóteses. Uma vez que os testes t e F dependem da normalidade dos erros para serem válidos, a não normalidade pode resultar em taxas de erro tipo I e tipo II incorretas. No entanto, em grandes amostras, o Teorema Central do Limite ajuda a mitigar essas preocupações, tornando os testes mais robustos à violação da normalidade. Um erro do tipo I ocorre quando rejeitamos a hipótese nula quando é verdadeira, enquanto um erro do tipo II ocorre quando não rejeitamos a hipótese nula quando é falsa.</p>
+</section>
+<section id="como-verificar-a-não-normalidade-dos-erros" class="level3">
+<h3 class="anchored" data-anchor-id="como-verificar-a-não-normalidade-dos-erros">Como verificar a não normalidade dos erros?</h3>
+<p>A normalidade dos erros pode ser verificada através de gráficos e testes estatísticos. O primeiro passo é estimar o modelo e armazenar os resíduos. Os gráficos os mais indicados são os histogramas e os gráficos Q-Q (quantil-quantil). Um histograma dos resíduos mostra a sua distribuição (achatamento e deslocamento). O gráfico Q-Q mostra a relação entre os quantis dos resíduos e os quantis de uma distribuição normal. Um quantil é um valor que divide a distribuição em partes iguais, por exemplo, o quantil 0,5 (ou mediana) divide a distribuição em duas partes iguais. Nos testes estatísticos, os mais comuns são o teste de Jarque-Bera e o teste de Shapiro-Wilk. O teste de Jarque-Bera é um teste de bondade de ajuste que verifica se os resíduos seguem uma distribuição normal, baseando-se na assimetria e curtose dos resíduos. Em ambos os testes a hipótese nula é de que os resíduos seguem uma distribuição normal.</p>
+</section>
+<section id="como-lidar-com-a-não-normalidade-dos-erros" class="level3">
+<h3 class="anchored" data-anchor-id="como-lidar-com-a-não-normalidade-dos-erros">Como lidar com a não normalidade dos erros?</h3>
+<p>Como já foi referido anteriormente, em amostras grandes a distribuição dos erros tende a aproximar-se da normalidade (Teorema do Limite Central). No entanto, quando a não normalidade é uma preocupação, existem várias abordagens que podem ser adotadas.</p>
+<p>Uma abordagem comum para lidar com a não normalidade dos erros é a transformação dos dados. Transformações como a logarítmica ou Box-Cox podem ajudar a estabilizar a variância e tornar os erros mais normais. Além disso, métodos robustos de estimação, como a regressão quantílica, podem ser utilizados para obter inferências mais confiáveis na presença de não normalidade.</p>
+<p>No próximo capítulo, estudaremos métodos para avaliar e comparar modelos de regressão.</p>
+</section>
+</section>
+<section id="sec-pressuposto-multicolinearidade" class="level2">
+<h2 class="anchored" data-anchor-id="sec-pressuposto-multicolinearidade">Pressuposto: Ausência de Multicolinearidade</h2>
+<section id="o-que-é-3" class="level3">
+<h3 class="anchored" data-anchor-id="o-que-é-3">O que é?</h3>
+<p>A multicolinearidade ocorre quando duas ou mais variáveis independentes de um modelo de regressão estão correlacionadas entre si. Existem dois tipos de multicolinearidade:</p>
+<ul>
+<li>Multicolinearidade perfeita: as variáveis estão exatamente correlacionadas. Considerando o seguinte modelo:</li>
+</ul>
+<p><span class="math display">\[
+Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \epsilon
+\]</span> {#eq.multicolinearidade_perfeita}</p>
+<p>em que:</p>
+<p><span class="math display">\[
+X_1 = 3 X_2
+\]</span> {#eq.multicolinearidade_perfeita_}</p>
+<p>Exemplo de multicolinearidade perfeita:</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/multicolinearidade-perfeita-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>É possível determinar <span class="math inline">\(X_1\)</span> através de <span class="math inline">\(X_2\)</span>, ou seja, através de uma função linear.</p>
+<ul>
+<li>Multicolinearidade imperfeita: as variáveis estão correlacionadas, mas não através de uma constante. Considerando o modelo:</li>
+</ul>
+<p><span class="math display">\[
+W = \beta_0 + \beta_1 Z_1 + \beta_2 Z_2 + \epsilon
+\]</span> {#eq.multicolinearidade_imperfeita}</p>
+<p>em que:</p>
+<p><span class="math display">\[
+Z_1 =Z_2+\phi
+\]</span> {#eq.multicolinearidade_imperfeita_}</p>
+<p>onde o erro <span class="math inline">\(\phi\)</span> é uma variável aleatória.</p>
+<p>Exemplo Gráfico de multicolinearidade imperfeita:</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="capitulo-04-pressupostos-regressao_files/figure-html/multicolinearidade-imperfeita-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="quais-as-consequências-3" class="level3">
+<h3 class="anchored" data-anchor-id="quais-as-consequências-3">Quais as consequências?</h3>
+<p>Quando existe multicolinearidade perfeita não é possível estimar os coeficientes do modelo. Na multicolinearidade imperfeita, os coeficientes podem ser estimados, mas a presença de multicolinearidade pode levar ao aumento da variância dos coeficientes estimados e consequente diminuição do <span class="math inline">\(t_{stat}\)</span>. Isto pode levar a conclusões erradas sobre a importância das variáveis independentes no modelo. A multicolinearidade também pode alterar a interpretação dos coeficientes, uma vez que as mudanças numa variável independente podem estar associadas a mudanças noutra variável independente. Além disso, a multicolinearidade pode tornar o modelo mais sensível a pequenas mudanças nos dados, o que pode afetar a estabilidade das estimativas dos coeficientes.</p>
+</section>
+<section id="como-diagnosticar" class="level3">
+<h3 class="anchored" data-anchor-id="como-diagnosticar">Como diagnosticar?</h3>
+<p>Existem várias maneiras de detectar a multicolinearidade:</p>
+<ol type="1">
+<li><p><strong>Análise Gráfica</strong>: Criar gráficos de dispersão entre pares de variáveis independentes pode ajudar a identificar relações lineares fortes.</p></li>
+<li><p><strong>Matriz de Correlação</strong>: Calcular a matriz de correlação entre as variáveis independentes. Correlações altas (próximas de 1 ou -1) podem indicar multicolinearidade.</p></li>
+<li><p><strong>VIF (Variance Inflation Factor)</strong>: O VIF mede quanto a variância de um coeficiente de regressão aumenta devido à multicolinearidade. Um VIF acima de 5 ou 10 é frequentemente utilizado como valore de referência (convenção).</p></li>
+<li><p><strong>Regressão</strong>: Quando o modelo estimado apresenta coeficientes estatisticamente iguais a zero (valor P elevado) e o coeficiente de determinação (R²) é elevado pode indicar a presença de multicolinearidade.</p></li>
+<li><p><strong>Regressão entre as variáveis independentes</strong>: Estimar um modelo de regressão onde uma variável independente é explicada por outra variável independente (<span class="math inline">\(R^2\)</span> da regressão auxiliar muito elevado) pode ajudar a identificar multicolinearidade imperfeita.</p></li>
+</ol>
+</section>
+<section id="como-lidar-com-a-multicolinearidade" class="level3">
+<h3 class="anchored" data-anchor-id="como-lidar-com-a-multicolinearidade">Como lidar com a multicolinearidade?</h3>
+<p>Existem várias abordagens para lidar com a multicolinearidade:</p>
+<ol type="1">
+<li><p><strong>Remover Variáveis</strong>: Se duas ou mais variáveis estão altamente correlacionadas, pode ser útil remover uma delas do modelo.</p></li>
+<li><p><strong>Combinar ou transformar Variáveis</strong>: Criar índices, logarítmos, primeiras diferenças, variáveis centradas (<span class="math inline">\(x_i-\bar{x}\)</span>) etc.</p></li>
+<li><p><strong>Alterar a frequência dos dados ou horizonte temporal</strong>: mudar de uma frequência anual para mensal (se disponível) ou aumentar a amostra.</p></li>
+<li><p><strong>Regularização</strong>: Métodos como a regressão Lasso e Ridge ou a Análise de Componentes Principais (PCA) também podem ser utilizados.</p></li>
+</ol>
+<p>De notar que em séries temporais existe sempre algum grau de multicolinearidade entre as variáveis independentes.</p>
+</section>
+</section>
+<section id="sec-pressuposto-valor-esperado-erro-zero" class="level2">
+<h2 class="anchored" data-anchor-id="sec-pressuposto-valor-esperado-erro-zero">Pressuposto: Valor Esperado do Erro é Zero</h2>
+<p>O pressuposto de que o valor esperado do erro é zero implica que, em média, os erros deverá se zero. Ou seja:</p>
+<p><span id="eq-erro-zero"><span class="math display">\[
+E(u_i) = 0
+\tag{16}\]</span></span></p>
+<p>No <code>R</code> podemos verificar este pressuposto através do seguinte código:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ajustar o modelo</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>modelo <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, <span class="at">data =</span> dados)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar o pressuposto</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">residuals</span>(modelo))</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">residuals</span>(modelo))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Naturalmente, este pressuposto é fundamental para garantir que as estimativas dos coeficientes do modelo sejam não viesadas e que a inferência estatística seja válida.</p>
+</section>
+<section id="sec-pressuposto-variaveis-independentes-nao-estocasticas" class="level2">
+<h2 class="anchored" data-anchor-id="sec-pressuposto-variaveis-independentes-nao-estocasticas">Pressuposto: As variáveis independentes não são estocásticas</h2>
+<p>Este pressuposto implica que as variáveis independentes devem ser fixas ou determinadas antes da observação do erro. Em outras palavras, as variáveis independentes não devem ser influenciadas por fatores aleatórios que também afetam a variável dependente.</p>
+<p>No próximo capítulo, vamos explorar a aplicação destes pressupostos e outros aspectos a ter em conta nos modelos de regressão.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

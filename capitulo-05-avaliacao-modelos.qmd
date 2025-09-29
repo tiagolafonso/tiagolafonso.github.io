@@ -1431,7 +1431,7 @@ A biblioteca `performance` tem a função `check_model()` que realiza uma série
 #| fig-width: 8       # Largura em polegadas
 #| 
 #carregar bibliotecas
-library(wooldridge) 
+library(wooldridge)
 library(performance)
 
 #carregar dados

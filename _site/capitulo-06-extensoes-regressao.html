@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>capitulo-06-extensoes-regressao – tiagolafonso.github.io</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ddd961a2510921635943dfbbd19534c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<script src="site_libs/plotly-binding-4.11.0/plotly.js"></script>
+
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+
+<script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
+
+<link href="site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+
+<script src="site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">tiagolafonso.github.io</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sec-extensoes-regressao" id="toc-sec-extensoes-regressao" class="nav-link active" data-scroll-target="#sec-extensoes-regressao">Extensões dos Modelos de Regressão</a>
+  <ul class="collapse">
+  <li><a href="#modelos-com-variáveis-dummy" id="toc-modelos-com-variáveis-dummy" class="nav-link" data-scroll-target="#modelos-com-variáveis-dummy">Modelos com Variáveis Dummy</a>
+  <ul class="collapse">
+  <li><a href="#com-variáveis-dummy-simples" id="toc-com-variáveis-dummy-simples" class="nav-link" data-scroll-target="#com-variáveis-dummy-simples">com variáveis Dummy Simples</a></li>
+  <li><a href="#múltiplas-categorias" id="toc-múltiplas-categorias" class="nav-link" data-scroll-target="#múltiplas-categorias">Múltiplas Categorias</a></li>
+  </ul></li>
+  <li><a href="#modelos-com-termos-de-interação" id="toc-modelos-com-termos-de-interação" class="nav-link" data-scroll-target="#modelos-com-termos-de-interação">Modelos com Termos de Interação</a>
+  <ul class="collapse">
+  <li><a href="#entre-variáveis-contínuas" id="toc-entre-variáveis-contínuas" class="nav-link" data-scroll-target="#entre-variáveis-contínuas">entre variáveis contínuas</a></li>
+  <li><a href="#entre-variáveis-dummy" id="toc-entre-variáveis-dummy" class="nav-link" data-scroll-target="#entre-variáveis-dummy">entre variáveis dummy</a></li>
+  <li><a href="#entre-variáveis-dummy-e-contínuas" id="toc-entre-variáveis-dummy-e-contínuas" class="nav-link" data-scroll-target="#entre-variáveis-dummy-e-contínuas">entre variáveis dummy e contínuas</a></li>
+  </ul></li>
+  <li><a href="#modelos-não-lineares" id="toc-modelos-não-lineares" class="nav-link" data-scroll-target="#modelos-não-lineares">Modelos Não Lineares</a></li>
+  <li><a href="#modelo-com-o-desvio-padrão-robusto" id="toc-modelo-com-o-desvio-padrão-robusto" class="nav-link" data-scroll-target="#modelo-com-o-desvio-padrão-robusto">Modelo com o desvio padrão robusto</a></li>
+  <li><a href="#modelo-dos-mínimos-quadrados-ponderados-wls" id="toc-modelo-dos-mínimos-quadrados-ponderados-wls" class="nav-link" data-scroll-target="#modelo-dos-mínimos-quadrados-ponderados-wls">Modelo dos Mínimos Quadrados Ponderados (WLS)</a></li>
+  <li><a href="#modelo-generalizado-de-mínimos-quadrados-gls" id="toc-modelo-generalizado-de-mínimos-quadrados-gls" class="nav-link" data-scroll-target="#modelo-generalizado-de-mínimos-quadrados-gls">Modelo Generalizado de Mínimos Quadrados (GLS)</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<section id="sec-extensoes-regressao" class="level1">
+<h1>Extensões dos Modelos de Regressão</h1>
+<p>Este capítulo apresenta várias extensões dos modelos de regressão linear básicos que são frequentemente necessárias na estimação de modelos econométricos. Estas extensões permitem lidar com situações mais complexas e realistas que os modelos lineares simples não conseguem capturar adequadamente.</p>
+<section id="modelos-com-variáveis-dummy" class="level2">
+<h2 class="anchored" data-anchor-id="modelos-com-variáveis-dummy">Modelos com Variáveis Dummy</h2>
+<p>Uma variável dummy é uma variável que assume valores binários (0 ou 1) que indica apresença ou não de uma característica específica. Por exemplo, uma variável dummy pode ser usada para indicar a presença de uma determinada condição (sim ou não) ou para categorias. Por exemplo, uma variável dummy pode ser usada para indicar se uma empresa está localizada numa determinada região (1) ou não (0), ou em várias regiões (mais de duas categorias).</p>
+<section id="com-variáveis-dummy-simples" class="level3">
+<h3 class="anchored" data-anchor-id="com-variáveis-dummy-simples">com variáveis Dummy Simples</h3>
+<p>As variáveis dummy são variáveis binárias que assumem valores 0 ou 1.</p>
+<p>Uma dummmy, é geralmente representada por:</p>
+<p><span class="math display">\[
+D_i = \begin{cases}
+1, &amp; \text{se a condição é satisfeita} \\
+0, &amp; \text{a condição não é satisfeita}
+\end{cases}
+\]</span></p>
+<p>Num modelo de regressão, uma variável dummy pode ser incluída como uma variável explicativa para capturar o efeito de uma característica qualitativa na variável dependente:</p>
+<p><span id="eq-reg-dummy"><span class="math display">\[
+y_i = \beta_0 + \beta_1 x_i + \beta_2 D_i + u_i
+\tag{1}\]</span></span></p>
+<p>É necessário definir muito bem o que é o 0 ou o que e o 1., pois vai mudar a interpretação dos coeficientes no modelo. Para este exemplo vamos utilizar os dados <code>wage2</code> da biblioteca <code>wooldridge</code>, que contém informações sobre o salário, bem como outras características como anos de experiência, anos na empresa e outras características. O conjunto de dados contém variáveis dummy em que uma delas (<code>married</code>), que indica se o funcionário é casado (1) ou não (0). No <code>R</code> uma variável não tem de ser necessariamente binária para ser tratada como dummy, o <code>R</code> cria automaticamente as dummies para variáveis categóricas que são fatores (para o <code>R</code>). Vamos estimar a regressão do salário em função dos anos de educação, anos de experiência e se é casado ou não:</p>
+<p><span id="eq-reg-dummy-simples"><span class="math display">\[
+wage_i = \beta_0 + \beta_1 educ_i + \beta_2 exper_i + \beta_3 married_i + u_i
+\tag{2}\]</span></span></p>
+<p>A interpretação do coeficientes da dummy (<span class="math inline">\(\beta_3\)</span>) é a diferença média no salário entre indivíduos casados e não casados (<span class="math inline">\(married = 1\)</span> e <span class="math inline">\(married = 0\)</span>), mantendo a educação e a experiência constantes. Ou seja, depende das unidades da variável dependente (neste caso, salário em dólares americanos).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wooldridge)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"wage2"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar modelo de regressão</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>modelo_dummy <span class="ot">&lt;-</span> <span class="fu">lm</span>(wage <span class="sc">~</span> educ <span class="sc">+</span> exper <span class="sc">+</span> married, <span class="at">data =</span> wage2)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_dummy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = wage ~ educ + exper + married, data = wage2)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-864.16 -241.25  -39.12  194.22 2145.23 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -427.775    111.109  -3.850 0.000126 ***
+educ          76.550      6.227  12.293  &lt; 2e-16 ***
+exper         16.317      3.139   5.198 2.48e-07 ***
+married      185.907     39.604   4.694 3.08e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 372.1 on 931 degrees of freedom
+Multiple R-squared:  0.1558,    Adjusted R-squared:  0.1531 
+F-statistic: 57.29 on 3 and 931 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Interpretação dos coeficientes:</p>
+<ul>
+<li><span class="math inline">\(\beta_0\)</span> (constante): O salário médio para alguém com 0 anos de educação, 0 anos de experiência e que não é casado é de -427.76 US$.</li>
+<li><span class="math inline">\(\beta_1\)</span> (<code>educ</code>): Cada ano adicional de educação está associado a um aumento médio de 76.55 US$ no salário, <em>ceteris paribus</em>.</li>
+<li><span class="math inline">\(\beta_2\)</span> (<code>exper</code>): Cada ano adicional de experiência está associado a um aumento médio de 16.32 US$ no salário, <em>ceteris paribus</em>.</li>
+<li><span class="math inline">\(\beta_3\)</span> (<code>married</code>): um indivíduo casado ganha, em média, 185.91 US$ a mais do que um indivíduo não casado, <em>ceteris paribus</em>.</li>
+</ul>
+<p>Para um regressão simples, apenas com a variável dummy como independente, o valor da constante é o valor médio da variável dependente quando a dummy é 0. Considerando o modelo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar modelo de regressão com apenas a dummy</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>modelo_dummy_s <span class="ot">&lt;-</span> <span class="fu">lm</span>(wage <span class="sc">~</span> married, <span class="at">data =</span> wage2)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_dummy_s)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = wage ~ married, data = wage2)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-862.05 -284.05  -51.05  210.95 2100.95 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   798.44      40.08  19.922  &lt; 2e-16 ***
+married       178.61      42.41   4.211 2.78e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 400.8 on 933 degrees of freedom
+Multiple R-squared:  0.01865,   Adjusted R-squared:  0.0176 
+F-statistic: 17.74 on 1 and 933 DF,  p-value: 2.784e-05</code></pre>
+</div>
+</div>
+<p>O salário médio para indivíduos não casados é de 798.44 US$. E qual o salário médio para indicíduos casados? Podemos calculamos o valor do salário para quando <span class="math inline">\(married = 1\)</span> considerando os coeficientes do modelo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular salário médio para indivíduos casados</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>salario_casado <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelo_dummy_s, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">married =</span> <span class="dv">1</span>))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>salario_casado</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       1 
+977.0479 </code></pre>
+</div>
+</div>
+<p>O salário médio para indivíduos casados é em média de 977.05 US$. Apenas para confirmar, podemos calcular a média diretamente com uma subamostra para cada grupo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular salário médio para indivíduos casados</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Para indivíduos não casados (married = 0)</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>salario_nao_casado <span class="ot">&lt;-</span> wage2 <span class="sc">%&gt;%</span> </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(married <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">salario_medio =</span> <span class="fu">mean</span>(wage))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>salario_nao_casado</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  salario_medio
+1        798.44</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para indivíduos casados (married = 1)</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>salario_casado <span class="ot">&lt;-</span> wage2 <span class="sc">%&gt;%</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(married <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">salario_medio =</span> <span class="fu">mean</span>(wage))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>salario_casado</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  salario_medio
+1      977.0479</code></pre>
+</div>
+</div>
+<p>Atravé do gráfico podemos visualizar a diferença nos salários entre indivíduos casados e não casados:</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'plotly'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:ggplot2':
+
+    last_plot</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:stats':
+
+    filter</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:graphics':
+
+    layout</code></pre>
+</div>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-fe89cb72b9329229c7c0" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-fe89cb72b9329229c7c0">{"x":{"visdat":{"2034573825a2":["function () ","plotlyVisDat"],"203461005242":["function () ","data"]},"cur_data":"203461005242","attrs":{"2034573825a2":{"x":{},"y":{},"color":{},"colors":["steelblue","orange"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box"},"2034573825a2.1":{"x":{},"y":{},"color":{},"colors":["steelblue","orange"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","mode":"markers","marker":{"size":3,"opacity":0.29999999999999999},"showlegend":false,"inherit":true},"203461005242":{"x":{},"y":{},"color":{},"colors":["steelblue","orange"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","mode":"markers","marker":{"size":10,"color":"red","symbol":"circle"},"name":"Média","showlegend":false,"inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Distribuição do Salário por Estado Civil","xaxis":{"domain":[0,1],"automargin":true,"title":"Estado Civil","type":"category","categoryorder":"array","categoryarray":["Não Casado","Casado"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Salário (US$)"},"showlegend":true,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"fillcolor":"rgba(70,130,180,0.5)","x":["Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado"],"y":[600,900,635,981,1749,769,875,963,619,1694,1076,1299,1282,433,865,1346,480,513,1105,450,1899,578,1250,652,727,1014,449,1031,537,930,769,417,490,898,571,445,1050,812,841,475,721,745,879,1212,562,375,854,888,758,1000,310,1000,556,606,812,549,1417,417,1039,685,577,1250,600,480,961,900,409,769,1098,1500,377,722,350,577,1105,600,950,533,1354,550,360,1212,1699,900,1154,369,800,875,680,875,640,425,510,681,661,503,400,485,618,481],"type":"box","name":"Não Casado","marker":{"color":"rgba(70,130,180,1)","line":{"color":"rgba(70,130,180,1)"}},"line":{"color":"rgba(70,130,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(255,165,0,0.5)","x":["Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado"],"y":[769,808,825,650,562,1400,1081,1154,1000,930,921,1318,1792,958,1360,850,830,471,1275,1615,873,2137,1053,1602,1188,800,1417,1000,1424,2668,666,1779,782,1572,1274,714,1081,692,1318,1239,1027,1748,770,1154,1155,808,1100,1154,1000,462,1375,1452,800,1748,1151,840,978,442,600,1366,1643,1455,2310,1682,1235,855,1072,1040,1000,675,1100,996,732,1200,686,754,857,832,579,672,2500,750,1186,833,650,1250,1122,865,808,903,900,625,1586,962,1539,1110,770,1000,895,1205,750,654,601,600,1188,635,1225,1151,1031,1049,1000,1105,1924,1346,809,1495,1200,500,1325,900,800,800,1034,980,884,923,1193,2771,779,950,1394,1495,650,670,1126,1028,2404,757,1250,1162,1025,1100,714,1318,1411,2162,1273,1140,942,1058,750,1000,951,635,1250,675,400,577,590,923,1100,1130,618,962,529,817,962,840,866,2404,1126,1160,723,1778,1903,1010,971,525,525,670,500,1058,550,500,865,1081,1304,575,623,515,1273,990,600,1160,500,795,500,740,1250,1250,913,1346,445,265,1250,1607,1452,1391,821,794,500,520,1730,1924,1155,2162,923,1115,1500,826,937,978,1272,1136,800,1339,1063,935,808,375,1082,1155,548,622,841,587,1924,1058,1202,1154,1070,1202,711,1202,850,1000,1000,865,1375,1586,1602,3078,906,952,289,1444,962,1075,909,1250,620,1016,800,1079,654,781,1038,1924,1202,666,905,890,817,577,756,1011,1155,1025,1350,1001,796,1230,754,714,1000,2067,912,600,951,711,1151,1000,841,400,1175,1202,1442,538,781,750,700,1346,800,1250,1105,762,962,800,658,1270,1313,824,1442,1400,1038,668,1100,1000,523,1111,962,729,690,1010,600,596,850,670,793,1442,670,876,841,975,1223,910,533,750,1206,900,1170,540,550,615,909,769,984,833,1027,1000,465,1100,641,1035,950,938,1250,586,693,673,654,692,1111,1368,1282,1250,1346,1424,1161,583,1260,947,1850,1575,1442,489,1126,500,1200,565,1920,684,774,233,975,1366,2137,700,1200,1161,729,750,1026,1111,625,1200,1541,1154,610,1749,350,765,790,818,477,938,2099,350,940,1202,450,1058,1000,318,958,995,1600,511,1411,1346,1522,1075,1200,1377,874,625,1250,1082,693,727,615,913,884,698,800,1000,1300,923,1539,721,815,600,1100,1058,962,433,940,1000,500,800,766,750,550,795,723,1039,200,400,575,850,508,1162,1199,1270,350,963,1463,802,642,751,488,1400,940,866,675,375,325,346,1442,560,550,950,684,1322,1634,472,666,1679,1250,760,1154,1602,1442,865,705,1000,852,770,1000,1329,1682,577,1040,1000,988,478,440,485,705,1550,960,1000,625,1346,479,1201,1346,1122,543,450,507,547,586,462,705,1566,1634,1282,556,1200,855,1053,1000,1602,508,1500,1682,750,843,1004,650,808,2137,761,345,495,987,2500,1212,577,390,1500,583,460,945,1442,1333,1333,700,973,2162,797,400,1015,1744,630,445,660,779,560,1122,453,1386,1539,1154,962,480,808,1442,1091,500,1026,1333,915,910,1000,1160,1001,713,929,400,1241,1065,403,940,812,700,575,450,621,441,625,726,500,1000,393,962,962,865,1154,1386,732,865,700,975,1300,900,829,1000,827,500,1155,700,1710,2004,890,3078,1539,508,1143,962,1250,990,905,926,1559,1312,923,879,800,1049,1190,583,1200,797,1371,1270,1832,909,1746,520,808,2137,692,931,812,866,1442,500,1384,528,881,1026,1620,1843,1602,1000,737,1699,1025,1107,625,720,855,1250,1130,1924,962,1874,1573,940,900,882,1710,1260,751,1097,1001,1000,1250,857,1211,937,904,872,1200,1261,950,115,673,1084,1058,800,1924,855,864,1092,1025,850,673,800,1049,884,1200,664,1111,850,1000,1202,666,923,788,950,1442,866,625,693,2308,1196,700,721,1500,1050,801,1198,390,889,1076,1127,750,855,525,1104,553,800,1384,370,596,402,418,1133,950,600,925,550,606,425,340,692,575,571,817,987,616,1026,808,808,788,850,900,1418,260,662,562,562,357,1009,1442,651,750,754,700,937,624,750,900,540,642,900,513,894,1282,325,769,1040,751,380,300,753,1065,1070,1573,650,700,494,890,520,891,570,1444,500,1473,803,962,1000,600,450,629,492,1562,357,960,566,481,1442,645,788,644,477,664,520,1202,538,873,1000],"type":"box","name":"Casado","marker":{"color":"rgba(255,165,0,1)","line":{"color":"rgba(255,165,0,1)"}},"line":{"color":"rgba(255,165,0,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado","Não Casado"],"y":[600,900,635,981,1749,769,875,963,619,1694,1076,1299,1282,433,865,1346,480,513,1105,450,1899,578,1250,652,727,1014,449,1031,537,930,769,417,490,898,571,445,1050,812,841,475,721,745,879,1212,562,375,854,888,758,1000,310,1000,556,606,812,549,1417,417,1039,685,577,1250,600,480,961,900,409,769,1098,1500,377,722,350,577,1105,600,950,533,1354,550,360,1212,1699,900,1154,369,800,875,680,875,640,425,510,681,661,503,400,485,618,481],"type":"scatter","mode":"markers","marker":{"color":"rgba(70,130,180,1)","size":3,"opacity":0.29999999999999999,"line":{"color":"rgba(70,130,180,1)"}},"showlegend":false,"name":"Não Casado","textfont":{"color":"rgba(70,130,180,1)"},"error_y":{"color":"rgba(70,130,180,1)"},"error_x":{"color":"rgba(70,130,180,1)"},"line":{"color":"rgba(70,130,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado","Casado"],"y":[769,808,825,650,562,1400,1081,1154,1000,930,921,1318,1792,958,1360,850,830,471,1275,1615,873,2137,1053,1602,1188,800,1417,1000,1424,2668,666,1779,782,1572,1274,714,1081,692,1318,1239,1027,1748,770,1154,1155,808,1100,1154,1000,462,1375,1452,800,1748,1151,840,978,442,600,1366,1643,1455,2310,1682,1235,855,1072,1040,1000,675,1100,996,732,1200,686,754,857,832,579,672,2500,750,1186,833,650,1250,1122,865,808,903,900,625,1586,962,1539,1110,770,1000,895,1205,750,654,601,600,1188,635,1225,1151,1031,1049,1000,1105,1924,1346,809,1495,1200,500,1325,900,800,800,1034,980,884,923,1193,2771,779,950,1394,1495,650,670,1126,1028,2404,757,1250,1162,1025,1100,714,1318,1411,2162,1273,1140,942,1058,750,1000,951,635,1250,675,400,577,590,923,1100,1130,618,962,529,817,962,840,866,2404,1126,1160,723,1778,1903,1010,971,525,525,670,500,1058,550,500,865,1081,1304,575,623,515,1273,990,600,1160,500,795,500,740,1250,1250,913,1346,445,265,1250,1607,1452,1391,821,794,500,520,1730,1924,1155,2162,923,1115,1500,826,937,978,1272,1136,800,1339,1063,935,808,375,1082,1155,548,622,841,587,1924,1058,1202,1154,1070,1202,711,1202,850,1000,1000,865,1375,1586,1602,3078,906,952,289,1444,962,1075,909,1250,620,1016,800,1079,654,781,1038,1924,1202,666,905,890,817,577,756,1011,1155,1025,1350,1001,796,1230,754,714,1000,2067,912,600,951,711,1151,1000,841,400,1175,1202,1442,538,781,750,700,1346,800,1250,1105,762,962,800,658,1270,1313,824,1442,1400,1038,668,1100,1000,523,1111,962,729,690,1010,600,596,850,670,793,1442,670,876,841,975,1223,910,533,750,1206,900,1170,540,550,615,909,769,984,833,1027,1000,465,1100,641,1035,950,938,1250,586,693,673,654,692,1111,1368,1282,1250,1346,1424,1161,583,1260,947,1850,1575,1442,489,1126,500,1200,565,1920,684,774,233,975,1366,2137,700,1200,1161,729,750,1026,1111,625,1200,1541,1154,610,1749,350,765,790,818,477,938,2099,350,940,1202,450,1058,1000,318,958,995,1600,511,1411,1346,1522,1075,1200,1377,874,625,1250,1082,693,727,615,913,884,698,800,1000,1300,923,1539,721,815,600,1100,1058,962,433,940,1000,500,800,766,750,550,795,723,1039,200,400,575,850,508,1162,1199,1270,350,963,1463,802,642,751,488,1400,940,866,675,375,325,346,1442,560,550,950,684,1322,1634,472,666,1679,1250,760,1154,1602,1442,865,705,1000,852,770,1000,1329,1682,577,1040,1000,988,478,440,485,705,1550,960,1000,625,1346,479,1201,1346,1122,543,450,507,547,586,462,705,1566,1634,1282,556,1200,855,1053,1000,1602,508,1500,1682,750,843,1004,650,808,2137,761,345,495,987,2500,1212,577,390,1500,583,460,945,1442,1333,1333,700,973,2162,797,400,1015,1744,630,445,660,779,560,1122,453,1386,1539,1154,962,480,808,1442,1091,500,1026,1333,915,910,1000,1160,1001,713,929,400,1241,1065,403,940,812,700,575,450,621,441,625,726,500,1000,393,962,962,865,1154,1386,732,865,700,975,1300,900,829,1000,827,500,1155,700,1710,2004,890,3078,1539,508,1143,962,1250,990,905,926,1559,1312,923,879,800,1049,1190,583,1200,797,1371,1270,1832,909,1746,520,808,2137,692,931,812,866,1442,500,1384,528,881,1026,1620,1843,1602,1000,737,1699,1025,1107,625,720,855,1250,1130,1924,962,1874,1573,940,900,882,1710,1260,751,1097,1001,1000,1250,857,1211,937,904,872,1200,1261,950,115,673,1084,1058,800,1924,855,864,1092,1025,850,673,800,1049,884,1200,664,1111,850,1000,1202,666,923,788,950,1442,866,625,693,2308,1196,700,721,1500,1050,801,1198,390,889,1076,1127,750,855,525,1104,553,800,1384,370,596,402,418,1133,950,600,925,550,606,425,340,692,575,571,817,987,616,1026,808,808,788,850,900,1418,260,662,562,562,357,1009,1442,651,750,754,700,937,624,750,900,540,642,900,513,894,1282,325,769,1040,751,380,300,753,1065,1070,1573,650,700,494,890,520,891,570,1444,500,1473,803,962,1000,600,450,629,492,1562,357,960,566,481,1442,645,788,644,477,664,520,1202,538,873,1000],"type":"scatter","mode":"markers","marker":{"color":"rgba(255,165,0,1)","size":3,"opacity":0.29999999999999999,"line":{"color":"rgba(255,165,0,1)"}},"showlegend":false,"name":"Casado","textfont":{"color":"rgba(255,165,0,1)"},"error_y":{"color":"rgba(255,165,0,1)"},"error_x":{"color":"rgba(255,165,0,1)"},"line":{"color":"rgba(255,165,0,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Casado"],"y":[977.04790419161679],"type":"scatter","mode":"markers","marker":{"color":"red","size":10,"symbol":"circle","line":{"color":"rgba(255,165,0,1)"}},"name":"Média","showlegend":false,"textfont":{"color":"rgba(255,165,0,1)"},"error_y":{"color":"rgba(255,165,0,1)"},"error_x":{"color":"rgba(255,165,0,1)"},"line":{"color":"rgba(255,165,0,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Não Casado"],"y":[798.44000000000005],"type":"scatter","mode":"markers","marker":{"color":"red","size":10,"symbol":"circle","line":{"color":"rgba(70,130,180,1)"}},"name":"Média","showlegend":false,"textfont":{"color":"rgba(70,130,180,1)"},"error_y":{"color":"rgba(70,130,180,1)"},"error_x":{"color":"rgba(70,130,180,1)"},"line":{"color":"rgba(70,130,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>O ponto vermelho indica a média do salário para cada grupo.</p>
+<p>Podemos converter a variável <code>married</code> para <code>non-married</code> (0 = casado, 1 = não casado) e re-estimar o modelo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Converter variável married para non-married</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>wage2<span class="sc">$</span>non_married <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(wage2<span class="sc">$</span>married <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar modelo de regressão com a nova variável</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>modelo_dummy_non_married <span class="ot">&lt;-</span> <span class="fu">lm</span>(wage <span class="sc">~</span> non_married,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                                <span class="at">data =</span> wage2)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Comparar modelos</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Please cite as: </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code> Hlavac, Marek (2022). stargazer: Well-Formatted Regression and Summary Statistics Tables.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code> R package version 5.2.3. https://CRAN.R-project.org/package=stargazer </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(modelo_dummy_s,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>        modelo_dummy_non_married,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">type =</span> <span class="st">"text"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+===========================================================
+                                   Dependent variable:     
+                               ----------------------------
+                                           wage            
+                                    (1)            (2)     
+-----------------------------------------------------------
+married                          178.608***                
+                                  (42.411)                 
+                                                           
+non_married                                    -178.608*** 
+                                                (42.411)   
+                                                           
+Constant                         798.440***    977.048***  
+                                  (40.079)      (13.870)   
+                                                           
+-----------------------------------------------------------
+Observations                        935            935     
+R2                                 0.019          0.019    
+Adjusted R2                        0.018          0.018    
+Residual Std. Error (df = 933)    400.786        400.786   
+F Statistic (df = 1; 933)        17.736***      17.736***  
+===========================================================
+Note:                           *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>Podemos ver que o coeficiente da dummy mudou de sinal, mas a interpretação alterou de a diferença média no salário entre indivíduos casados e não casados (<code>modelo_dummy_s</code>) para a diferença média no salário entre indivíduos não casados e casados (<code>modelo_dummy_non_married</code>). A constante do segundo modelo é o salário médio para indivíduos casados (quando <code>non_married = 0</code>).</p>
+<p>Quando a variável dependete está em logaritmos, o coeficiente da dummy pode ser interpretado como uma diferença percentual aproximada. Por exemplo para o modelo:</p>
+<p><span id="eq-reg-dummy-log"><span class="math display">\[
+\log(wage_i) = \beta_0 + \beta_1 educ_i + \beta_2 exper_i + \beta_3 married_i + u_i
+\tag{3}\]</span></span></p>
+<p>No <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar modelo de regressão com log do salário</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>modelo_dummy_log <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(wage) <span class="sc">~</span> educ <span class="sc">+</span> exper <span class="sc">+</span> married,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> wage2)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_dummy_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = log(wage) ~ educ + exper + married, data = wage2)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.89479 -0.23544  0.02585  0.25920  1.27757 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 5.327960   0.115832  45.997  &lt; 2e-16 ***
+educ        0.078158   0.006492  12.039  &lt; 2e-16 ***
+exper       0.018290   0.003273   5.588 3.01e-08 ***
+married     0.209262   0.041288   5.068 4.84e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.3879 on 931 degrees of freedom
+Multiple R-squared:  0.1542,    Adjusted R-squared:  0.1515 
+F-statistic: 56.58 on 3 and 931 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Portanto a variação percentual aproximada é de 20.9% <span class="math inline">\(100 \times \beta_{married}\)</span>. Neste caso, indivíduos casados ganham, em média, cerca de 20.9% a mais do que indivíduos não casados, <em>ceteris paribus</em>. Para uma interpretação mais precisa, podemos usar a fórmula de <span class="citation" data-cites="halvorsen_interpretation_1980">@halvorsen_interpretation_1980</span>:</p>
+<p><span class="math display">\[
+\text{Variação Percentual} = (e^{\beta_3} - 1) \times 100
+\]</span></p>
+<p>no <code>R</code> é necessário extrair o coefiente do modelo e calcular o valor exponencial:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extrair coeficiente da dummy</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>beta_married <span class="ot">&lt;-</span> <span class="fu">coef</span>(modelo_dummy_log)[<span class="st">"married"</span>]</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular Variação percentual</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>variacao_percentual <span class="ot">&lt;-</span> (<span class="fu">exp</span>(beta_married) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>variacao_percentual</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> married 
+23.27677 </code></pre>
+</div>
+</div>
+<p>Em média, indivíduos casados ganham cerca de 23.28% a mais do que indivíduos não casados, <em>ceteris paribus</em>.</p>
+<p>ou então pelo método alternativo sugerido por <span class="citation" data-cites="kennedy_estimation_1981">@kennedy_estimation_1981</span>:</p>
+<p><span class="math display">\[
+\text{Variação Percentual} \approx 100 \times \left(\frac{e^{\beta_3} - 1}{1}\right)
+\]</span></p>
+<p>Este método é especialmente útil quando o coeficiente é grande (geralmente maior que 0.1 ou 10%) e para amostras pequenas, pois leva em consideração a variância do estimador:</p>
+<p><span class="math display">\[
+\Delta Y \approx \left(e^{\beta - \frac{1}{2} \cdot \text{Var}(\beta)} - 1\right) \times 100
+\]</span></p>
+<p>No <code>R</code>, a variância do coeficiente pode ser obtida a partir da matriz de variância-covariância do modelo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obter variância do coeficiente</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>var_beta_married <span class="ot">&lt;-</span> <span class="fu">vcov</span>(modelo_dummy_log)[<span class="st">"married"</span>, <span class="st">"married"</span>]</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular Variação percentual ajustada</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>delta_y <span class="ot">&lt;-</span> (<span class="fu">exp</span>(beta_married <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> var_beta_married) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>delta_y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> married 
+23.17174 </code></pre>
+</div>
+</div>
+<p>Neste caso, a variação percentual ajustada é de 23.17%, que é ligeiramente diferente da estimativa anterior.</p>
+</section>
+<section id="múltiplas-categorias" class="level3">
+<h3 class="anchored" data-anchor-id="múltiplas-categorias">Múltiplas Categorias</h3>
+<p>As variáveis dummy também podem ser usadas para representar variáveis categóricas. Por exemplo, se tivermos uma variável multinominal que indica a cor dos carros vendidos (vermelho, azul, verde), podemos criar dummies para cada categoria:</p>
+<p><span id="eq-dummy-vermelho"><span class="math display">\[
+D_{vermelho} = \begin{cases}  
+1, &amp; \text{se o carro é vermelho} \\
+0, &amp; \text{não é vermelho}
+\end{cases}
+\tag{4}\]</span></span></p>
+<p><span id="eq-dummy-azul"><span class="math display">\[
+D_{azul} = \begin{cases}
+1, &amp; \text{se o carro é azul} \\
+0, &amp; \text{não é azul}
+\end{cases}
+\tag{5}\]</span></span></p>
+<p><span id="eq-dummy-verde"><span class="math display">\[
+D_{verde} = \begin{cases}
+1, &amp; \text{se o carro é verde} \\
+0, &amp; \text{não é verde}
+\end{cases}
+\tag{6}\]</span></span></p>
+<p>Exemplo no <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#introduzir dados</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>cores <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"vermelho"</span>, <span class="st">"azul"</span>, <span class="st">"verde"</span>, <span class="st">"vermelho"</span>,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"verde"</span>, <span class="st">"azul"</span>, <span class="st">"vermelho"</span>, <span class="st">"verde"</span>, </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">"azul"</span>, <span class="st">"vermelho"</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>preço <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">50000</span>, <span class="dv">52000</span>, <span class="dv">48000</span>, <span class="dv">51000</span>, <span class="dv">49000</span>, <span class="dv">53000</span>, </span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>            <span class="dv">50000</span>, <span class="dv">52000</span>, <span class="dv">48000</span>, <span class="dv">51000</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>dados <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(cores, preço)</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="co">#para tabela resumo</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gtsummary)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar dummies e taela</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>dados <span class="sc">|&gt;</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">vermelho =</span> <span class="fu">ifelse</span>(cores <span class="sc">==</span> <span class="st">"vermelho"</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">azul =</span> <span class="fu">ifelse</span>(cores <span class="sc">==</span> <span class="st">"azul"</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">verde =</span> <span class="fu">ifelse</span>(cores <span class="sc">==</span> <span class="st">"verde"</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(cores, vermelho, azul, verde) <span class="sc">|&gt;</span></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tbl_summary</span>(</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">by =</span> cores)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="xlouxyhygq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#xlouxyhygq table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#xlouxyhygq thead, #xlouxyhygq tbody, #xlouxyhygq tfoot, #xlouxyhygq tr, #xlouxyhygq td, #xlouxyhygq th {
+  border-style: none;
+}
+
+#xlouxyhygq p {
+  margin: 0;
+  padding: 0;
+}
+
+#xlouxyhygq .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#xlouxyhygq .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#xlouxyhygq .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#xlouxyhygq .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#xlouxyhygq .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#xlouxyhygq .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xlouxyhygq .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#xlouxyhygq .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#xlouxyhygq .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#xlouxyhygq .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#xlouxyhygq .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#xlouxyhygq .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#xlouxyhygq .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#xlouxyhygq .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#xlouxyhygq .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#xlouxyhygq .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#xlouxyhygq .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#xlouxyhygq .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#xlouxyhygq .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xlouxyhygq .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#xlouxyhygq .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#xlouxyhygq .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#xlouxyhygq .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xlouxyhygq .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#xlouxyhygq .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#xlouxyhygq .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xlouxyhygq .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xlouxyhygq .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#xlouxyhygq .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xlouxyhygq .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#xlouxyhygq .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xlouxyhygq .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#xlouxyhygq .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xlouxyhygq .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#xlouxyhygq .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xlouxyhygq .gt_left {
+  text-align: left;
+}
+
+#xlouxyhygq .gt_center {
+  text-align: center;
+}
+
+#xlouxyhygq .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#xlouxyhygq .gt_font_normal {
+  font-weight: normal;
+}
+
+#xlouxyhygq .gt_font_bold {
+  font-weight: bold;
+}
+
+#xlouxyhygq .gt_font_italic {
+  font-style: italic;
+}
+
+#xlouxyhygq .gt_super {
+  font-size: 65%;
+}
+
+#xlouxyhygq .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#xlouxyhygq .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#xlouxyhygq .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#xlouxyhygq .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#xlouxyhygq .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#xlouxyhygq .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#xlouxyhygq .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#xlouxyhygq .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#xlouxyhygq div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="gt_col_headings header">
+<th id="label" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="stat_1" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>azul</strong><br>
+N = 3<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th id="stat_2" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>verde</strong><br>
+N = 3<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+<th id="stat_3" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>vermelho</strong><br>
+N = 4<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">vermelho</td>
+<td class="gt_row gt_center" headers="stat_1">0 (0%)</td>
+<td class="gt_row gt_center" headers="stat_2">0 (0%)</td>
+<td class="gt_row gt_center" headers="stat_3">4 (100%)</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">azul</td>
+<td class="gt_row gt_center" headers="stat_1">3 (100%)</td>
+<td class="gt_row gt_center" headers="stat_2">0 (0%)</td>
+<td class="gt_row gt_center" headers="stat_3">0 (0%)</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">verde</td>
+<td class="gt_row gt_center" headers="stat_1">0 (0%)</td>
+<td class="gt_row gt_center" headers="stat_2">3 (100%)</td>
+<td class="gt_row gt_center" headers="stat_3">0 (0%)</td>
+</tr>
+</tbody><tfoot>
+<tr class="gt_footnotes odd">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> n (%)</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+<p>A função <code>ifelse()</code> é usada para criar as variáveis dummy. A sintaxe é <code>ifelse(condição, valor_se_condicao_verificada, valor_se_condicao_nao_verificada)</code>, ver <code>?ifelse</code> para mais detalhes.</p>
+<p>Para um exemplo real vamos usar o conjunto de dados <code>ceosal1</code> da biblioteca <code>wooldridge</code>, que contém informações sobre o salário dos CEOs de várias empresas, bem como outras características como anos de experiência, anos na empresa dummies que ondicam o setor de atividade da empresa:</p>
+<ul>
+<li><code>finance</code> - empresa do setor financeiro (1) ou não (0)</li>
+<li><code>indus</code> - empresa do setor industrial (1) ou não (0)</li>
+<li><code>consprod</code> - empresa do setor de bens de consumo (1) ou não (0)</li>
+<li><code>utility</code> - empresa do setor de serviços essenciais (1) ou não (0)</li>
+</ul>
+<p>Neste conjunto não é necessário calcular as dummies, pois já estão incluídas (o que nem sempre acontece). Vamos estimar um modelo de regressão do logaritmo do salário dos CEOs (<code>lsalary</code>) em função do logaritmo vendas (<code>lsales), da rendibilidade dos capitais próprios (</code>roe`) e o setor de atividade da empresa:</p>
+<p><span id="eq-reg-dummy-multiplas-categorias"><span class="math display">\[
+\begin{split}
+\log(salary_i) = \beta_0 &amp;+ \beta_1 \log(sales_i) + \beta_2 roe_i + \beta_3 D_{finance} + \\
+&amp;\beta_4 D_{indus} + \beta_5 D_{consprod} + \beta_6 D_{utility} + u_i
+\end{split}
+\tag{7}\]</span></span></p>
+<p>No <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wooldridge)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"ceosal1"</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar modelo de regressão</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>modelo_dummy_mult <span class="ot">&lt;-</span> <span class="fu">lm</span>(lsalary <span class="sc">~</span> lsales <span class="sc">+</span> roe <span class="sc">+</span> finance <span class="sc">+</span> indus <span class="sc">+</span> consprod <span class="sc">+</span> utility,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> ceosal1)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_dummy_mult)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = lsalary ~ lsales + roe + finance + indus + consprod + 
+    utility, data = ceosal1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.09465 -0.22173 -0.01973  0.17141  2.64394 
+
+Coefficients: (1 not defined because of singularities)
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  4.30510    0.28156  15.290  &lt; 2e-16 ***
+lsales       0.25719    0.03204   8.029 7.85e-14 ***
+roe          0.01115    0.00430   2.594   0.0102 *  
+finance      0.44096    0.10365   4.254 3.20e-05 ***
+indus        0.28300    0.09923   2.852   0.0048 ** 
+consprod     0.46389    0.10887   4.261 3.12e-05 ***
+utility           NA         NA      NA       NA    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.4598 on 203 degrees of freedom
+Multiple R-squared:  0.3569,    Adjusted R-squared:  0.341 
+F-statistic: 22.53 on 5 and 203 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Na regressão anterior o coeficiente da dummy <code>utility</code> aparece com valor NA, porque existe multicolinearidade perfeita entre as dummies (todas somadas é obtida uma coluna de 1’s, que é uma constante).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar multicolinearidade perfeita</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>ceosal1 <span class="sc">%&gt;%</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">soma_dummies =</span> finance <span class="sc">+</span> indus <span class="sc">+</span> consprod <span class="sc">+</span> utility) <span class="sc">%&gt;%</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">min_soma =</span> <span class="fu">min</span>(soma_dummies),</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">max_soma =</span> <span class="fu">max</span>(soma_dummies),</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">unique_somas =</span> <span class="fu">n_distinct</span>(soma_dummies))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  min_soma max_soma unique_somas
+1        1        1            1</code></pre>
+</div>
+</div>
+<p>Este fenómeno é conhecido como a armadilha das dummies. Em alguns softwares econométrico pode aparecer uma mensagem de erro a indicar que existe multicolinearidade perfeita. Para evitar este problema, uma das categorias deve ser excluída do modelo, ou seja, o modelo deve incluir apenas <span class="math inline">\(k-1\)</span> dummies (com <span class="math inline">\(k\)</span> o número de categorias). A categoria excluída é a categoria de referência (base) e as outras dummies medem o efeito relativo em comparação com essa mesma categoria. De referir que nesta amostra cada empresa pertence a apenas um setor. Neste caso, podemos excluir a dummy <code>utility</code> e re-estimar o modelo:</p>
+<p><span id="eq-reg-dummy-multiplas-categorias-2"><span class="math display">\[
+\begin{split}
+\log(salary_i) = \beta_0 &amp;+ \beta_1 \log(sales_i) + \beta_2 roe_i + \beta_3 D_{finance} + \\
+&amp; \beta_4 D_{indus} + \beta_5 D_{consprod} + u_i
+\end{split}
+\tag{8}\]</span></span></p>
+<p>No <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar modelo de regressão sem a dummy utility</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>modelo_dummy_mult2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(lsalary <span class="sc">~</span> lsales <span class="sc">+</span> roe <span class="sc">+</span> finance <span class="sc">+</span> indus <span class="sc">+</span> consprod,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">data =</span> ceosal1)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_dummy_mult2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = lsalary ~ lsales + roe + finance + indus + consprod, 
+    data = ceosal1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.09465 -0.22173 -0.01973  0.17141  2.64394 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  4.30510    0.28156  15.290  &lt; 2e-16 ***
+lsales       0.25719    0.03204   8.029 7.85e-14 ***
+roe          0.01115    0.00430   2.594   0.0102 *  
+finance      0.44096    0.10365   4.254 3.20e-05 ***
+indus        0.28300    0.09923   2.852   0.0048 ** 
+consprod     0.46389    0.10887   4.261 3.12e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.4598 on 203 degrees of freedom
+Multiple R-squared:  0.3569,    Adjusted R-squared:  0.341 
+F-statistic: 22.53 on 5 and 203 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Interpretação dos coeficientes :</p>
+<ul>
+<li><span class="math inline">\(\beta_0\)</span> (constante): O salário médio para uma empresa do setor de serviços essenciais (categoria de referência) com vendas iguais a 1 (log(1) = 0) e rendibilidade dos capitais próprios igual a 0 é de 257 US$.</li>
+<li><span class="math inline">\(\beta_1\)</span> (lsales): Um aumento de 1% nas vendas está associado a um aumento médio de 25.7% no salário do CEO, <em>ceteris paribus</em>.</li>
+<li><span class="math inline">\(\beta_2\)</span> (roe): Um aumento de 1 ponto percentual na rendibilidade dos capitais próprios está associado a um aumento médio de aproximadamente 1.1% no salário do CEO, <em>ceteris paribus</em> (a variável <code>roe</code> está expressa em percentagem, 0-100).</li>
+<li><span class="math inline">\(\beta_3\)</span> (finance): CEOs de empresas do setor financeiro ganham, aproximadamente em média, cerca de 44.1% a mais do que CEOs de empresas do setor de serviços essenciais (categoria de referência), <em>ceteris paribus</em>.</li>
+<li><span class="math inline">\(\beta_4\)</span> (indus): CEOs de empresas do setor industrial ganham, aproximadamente em média, cerca de 28.3% a mais do que CEOs de empresas do setor de serviços essenciais, <em>ceteris paribus</em>.</li>
+<li><span class="math inline">\(\beta_5\)</span> (consprod): CEOs de empresas do setor de bens de consumo ganham, aproximadamente em média, cerca de 3.3% a mais do que CEOs de empresas do setor de serviços essenciais, <em>ceteris paribus</em>.</li>
+</ul>
+<p>podemos considerar a dummy <code>indus</code> como a categoria de referência, excluindo-a do modelo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar modelo de regressão sem a dummy indus</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>modelo_dummy_mult3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(lsalary <span class="sc">~</span> lsales <span class="sc">+</span> roe <span class="sc">+</span> finance <span class="sc">+</span> consprod <span class="sc">+</span> utility,</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">data =</span> ceosal1)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(modelo_dummy_mult2,</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>        modelo_dummy_mult3,</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">type =</span> <span class="st">"text"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+===========================================================
+                                   Dependent variable:     
+                               ----------------------------
+                                         lsalary           
+                                    (1)            (2)     
+-----------------------------------------------------------
+lsales                            0.257***      0.257***   
+                                  (0.032)        (0.032)   
+                                                           
+roe                               0.011**        0.011**   
+                                  (0.004)        (0.004)   
+                                                           
+finance                           0.441***       0.158*    
+                                  (0.104)        (0.089)   
+                                                           
+indus                             0.283***                 
+                                  (0.099)                  
+                                                           
+consprod                          0.464***       0.181**   
+                                  (0.109)        (0.085)   
+                                                           
+utility                                         -0.283***  
+                                                 (0.099)   
+                                                           
+Constant                          4.305***      4.588***   
+                                  (0.282)        (0.295)   
+                                                           
+-----------------------------------------------------------
+Observations                        209            209     
+R2                                 0.357          0.357    
+Adjusted R2                        0.341          0.341    
+Residual Std. Error (df = 203)     0.460          0.460    
+F Statistic (df = 5; 203)        22.529***      22.529***  
+===========================================================
+Note:                           *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>Podemos observar que do modelo <code>modelo_dummy_mult2</code> e <code>modelo_dummy_mult3</code> que os coeficientes das dummies dos setores alteraram, pois a categoria de referência mudou. O coeficiente da dummy <code>indus</code> no primeiro modelo é o inverso do coeficiente da dummy <code>utility</code> no segundo modelo. Tal como na regressão <a href="#eq-reg-dummy-simples" class="quarto-xref">Equation&nbsp;2</a>, também é possível calcular a variação de salário em percentagem para as dummies do modelo <a href="#eq-reg-dummy-multiplas-categorias-2" class="quarto-xref">Equation&nbsp;8</a>, usando a fórmula de <span class="citation" data-cites="halvorsen_interpretation_1980">@halvorsen_interpretation_1980</span> ou o método alternativo sugerido por <span class="citation" data-cites="kennedy_estimation_1981">@kennedy_estimation_1981</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extrair coeficientes das dummies</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>beta_finance <span class="ot">&lt;-</span> <span class="fu">coef</span>(modelo_dummy_mult2)[<span class="st">"finance"</span>]</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>beta_indus <span class="ot">&lt;-</span> <span class="fu">coef</span>(modelo_dummy_mult2)[<span class="st">"indus"</span>]</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>beta_consprod <span class="ot">&lt;-</span> <span class="fu">coef</span>(modelo_dummy_mult2)[<span class="st">"consprod"</span>]</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular variação percentual usando a fórmula de Halvorsen e Palmquist (1980)</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>variacao_percentual_finance <span class="ot">&lt;-</span> (<span class="fu">exp</span>(beta_finance) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>variacao_percentual_indus <span class="ot">&lt;-</span> (<span class="fu">exp</span>(beta_indus) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>variacao_percentual_consprod <span class="ot">&lt;-</span> (<span class="fu">exp</span>(beta_consprod) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="co">#calcular variação percentual ajustada usando o método de Kennedy (1981)</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>var_beta_finance <span class="ot">&lt;-</span> <span class="fu">vcov</span>(modelo_dummy_mult2)[<span class="st">"finance"</span>, <span class="st">"finance"</span>]</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>var_beta_indus <span class="ot">&lt;-</span> <span class="fu">vcov</span>(modelo_dummy_mult2)[<span class="st">"indus"</span>, <span class="st">"indus"</span>]</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>var_beta_consprod <span class="ot">&lt;-</span> <span class="fu">vcov</span>(modelo_dummy_mult2)[<span class="st">"consprod"</span>, <span class="st">"consprod"</span>]</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>delta_y_finance <span class="ot">&lt;-</span> (<span class="fu">exp</span>(beta_finance <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> var_beta_finance) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>delta_y_indus <span class="ot">&lt;-</span> (<span class="fu">exp</span>(beta_indus <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> var_beta_indus) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>delta_y_consprod <span class="ot">&lt;-</span> (<span class="fu">exp</span>(beta_consprod <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> var_beta_consprod) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a><span class="co">#organizar em tabela:</span></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>tabela_variacao <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">Categoria =</span> <span class="fu">c</span>(<span class="st">"finance"</span>, <span class="st">"indus"</span>, <span class="st">"consprod"</span>),</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">Variacao_Percentual =</span> <span class="fu">c</span>(variacao_percentual_finance,</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>                            variacao_percentual_indus,</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>                            variacao_percentual_consprod),</span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">Variacao_Percentual_Ajustada =</span> <span class="fu">c</span>(delta_y_finance,</span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>                                    delta_y_indus,</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>                                    delta_y_consprod)</span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>tabela_variacao</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Categoria Variacao_Percentual Variacao_Percentual_Ajustada
+finance    finance            55.41952                     54.58691
+indus        indus            32.71071                     32.05889
+consprod  consprod            59.02531                     58.08560</code></pre>
+</div>
+</div>
+<p>A interpretação é semelhantes ao exemplo anterior. Também é possível utilizar variáveis dummy como variável independente. Esta abordagem será discutida na <strong>?@sec-variavel-dependente-limitada</strong>.</p>
+</section>
+</section>
+<section id="modelos-com-termos-de-interação" class="level2">
+<h2 class="anchored" data-anchor-id="modelos-com-termos-de-interação">Modelos com Termos de Interação</h2>
+<p>Um termo de interação é utilizado para capturar o efeito conjunto de duas ou mais variáveis independentes na variável dependente. Portanto num exemplo simples, um termo de interação entre duas variáveis <span class="math inline">\(X_1\)</span> e <span class="math inline">\(X_2\)</span> é representado como <span class="math inline">\(X_1 \times X_2\)</span>. O termo de interação permite que o efeito de uma variável independente dependa do valor de outra variável independente.</p>
+<p><span id="eq-reg-interacao"><span class="math display">\[
+y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \beta_3 (X_{1i} \times X_{2i}) + u_i
+\tag{9}\]</span></span></p>
+<p>Podemos criar termos de interaão entre variáveis contínuas, entre variáveis dummy e entre variáveis dummy e contínuas.</p>
+<section id="entre-variáveis-contínuas" class="level3">
+<h3 class="anchored" data-anchor-id="entre-variáveis-contínuas">entre variáveis contínuas</h3>
+<p>Para esta apicação vamos utilizar o conjunto de dados <code>wage2</code> da biblioteca <code>wooldridge</code>. Mais informação sobre o conjunto de dados pode ser obtida com <code>?wage2</code>.</p>
+<p>Vamos estimar a regressão do salário em função dos anos de educação, anos de experiência e a interacção entre educação e experiência:</p>
+<p><span id="eq-reg-interacao-continua"><span class="math display">\[
+wage_i = \beta_0 + \beta_1 educ_i + \beta_2 exper_i + \beta_3 (educ_i \times exper_i) + u_i
+\tag{10}\]</span></span></p>
+<p>O termo de interação pode ser crido no <code>data.frame</code> (<code>mutate(educ_exper = educ* exper)</code>) ou diretamente na fórmula do modelo. No <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wooldridge)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co"># carregar dados</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"wage2"</span>)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Estimar modelo de regressão com interacção</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>modelo_interacoes <span class="ot">&lt;-</span> <span class="fu">lm</span>(wage <span class="sc">~</span> educ <span class="sc">+</span> exper <span class="sc">+</span> <span class="fu">I</span>(educ <span class="sc">*</span> exper), <span class="at">data =</span> wage2)</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_interacoes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = wage ~ educ + exper + I(educ * exper), data = wage2)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-948.46 -254.53  -29.57  192.59 2150.77 
+
+Coefficients:
+                Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept)      271.934    230.227   1.181  0.23784   
+educ              35.106     16.626   2.112  0.03499 * 
+exper            -32.663     19.099  -1.710  0.08757 . 
+I(educ * exper)    3.904      1.462   2.670  0.00771 **
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 375.1 on 931 degrees of freedom
+Multiple R-squared:  0.1424,    Adjusted R-squared:  0.1397 
+F-statistic: 51.54 on 3 and 931 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>O <code>I</code> é necessário para indicar ao <code>R</code> que a operação deve ser interpretada literalmente, ou seja, como uma multiplicação entre as variáveis <code>educ</code> e <code>exper</code>. Sem o <code>I</code>, o <code>R</code> pode interpretar o símbolo <code>*</code> como um operador especial na fórmula do modelo, o que pode levar a resultados inesperados.</p>
+<p>Na interpretação dos coeficientes é necessário ter alguma atenção pois o coeficiente de cada variável que também faz parte do termo de interação depende do valor da outra variável. A interpretação dos coeficientes é a seguinte:</p>
+<ul>
+<li><span class="math inline">\(\beta_0\)</span> (constante): O salário médio para alguém com 0 anos de educação e 0 anos de experiência é de 271.934 US$. Pode não ter uma interpretação prática, pois é improvável que alguém tenha 0 anos de educação e experiência.</li>
+<li><span class="math inline">\(\beta_1\)</span> (<code>educ</code>): Cada ano adicional de educação está associado a um aumento médio de 35.106 US$ no salário, <em>ceteris paribus</em>, <strong>para alguém sem experiência</strong> (exper = 0).</li>
+<li><span class="math inline">\(\beta_2\)</span> (<code>exper</code>): Cada ano adicional de experiência está associado a uma diminuição média de 32.663 US$ no salário, <em>ceteris paribus</em>, <strong>para alguém sem educação</strong> (educ = 0).</li>
+<li><span class="math inline">\(\beta_3\)</span> (<code>I(educ * exper)</code>): O coeficiente de interação indica que o efeito combinado de educação e experiência no salário é positivo. Especificamente, para cada ano adicional de educação, o efeito da experiência no salário aumenta em 3.904 US$, e vice-versa.</li>
+</ul>
+<p>Num caso em que o termo de interação é negativo, por exemplo de -3.904, indicaria que o efeito combinado de educação e experiência no salário é negativo, ou seja, para cada ano adicional de educação, o efeito da experiência no salário diminui em 3.904 US$, e vice-versa.</p>
+<p>Para calcular o efeito marginal da educação no salário para diferentes níveis de experiência. O efeito marginal da educação é dado por:</p>
+<p><span class="math display">\[
+\frac{\partial wage}{\partial educ} = \beta_1 + \beta_3 \times exper
+\]</span> Portanto, o efeito marginal da educação varia com o nível de experiência. Podemos calcular o efeito marginal da educação para diferentes níveis de experiência (0, 5, 10, 20 anos):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Níveis de experiência para calcular o efeito marginal</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>niv_experiencia <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Coeficientes do modelo</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>coeficientes <span class="ot">&lt;-</span> <span class="fu">coef</span>(modelo_interacoes)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular efeito marginal da educação para diferentes níveis de experiência</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>efeito_marginal_educ <span class="ot">&lt;-</span> coeficientes[<span class="st">"educ"</span>] <span class="sc">+</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>                coeficientes[<span class="st">"I(educ * exper)"</span>] <span class="sc">*</span> niv_experiencia</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar data frame com os resultados obtidos</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">Nivel_Experiencia =</span> niv_experiencia,</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">Efeito_Marginal_Educacao =</span> efeito_marginal_educ)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Nivel_Experiencia Efeito_Marginal_Educacao
+1                 0                 35.10600
+2                 5                 54.62379
+3                10                 74.14158
+4                20                113.17716</code></pre>
+</div>
+</div>
+<p>Para um modelo onde a variável dependente está em logaritmo natural, o coeficiente da variável contínua no termo de interação pode ser interpretado como uma variação percentual aproximada. Por exemplo, para o modelo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>modelo_interacoes_log <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(wage) <span class="sc">~</span> educ <span class="sc">+</span> exper <span class="sc">+</span> <span class="fu">I</span>(educ <span class="sc">*</span> exper), <span class="at">data =</span> wage2)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_interacoes_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = log(wage) ~ educ + exper + I(educ * exper), data = wage2)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.88558 -0.24553  0.03558  0.26171  1.28836 
+
+Coefficients:
+                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)      5.949455   0.240826  24.704   &lt;2e-16 ***
+educ             0.044050   0.017391   2.533   0.0115 *  
+exper           -0.021496   0.019978  -1.076   0.2822    
+I(educ * exper)  0.003203   0.001529   2.095   0.0365 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.3923 on 931 degrees of freedom
+Multiple R-squared:  0.1349,    Adjusted R-squared:  0.1321 
+F-statistic: 48.41 on 3 and 931 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<ul>
+<li><code>constante</code>: O salário médio para alguém com 0 anos de educação e 0 anos de experiência é de 6.579 US$ (log(719.82)).</li>
+<li><code>educ</code>: Cada ano adicional de educação está associado a um aumento médio de aproximadamente 4.4% no salário, <em>ceteris paribus</em>, <strong>para alguém sem experiência</strong> (exper = 0).</li>
+<li><code>exper</code>: Cada ano adicional de experiência está associado a uma diminuição média de aproximadamente 2.15% no salário, <em>ceteris paribus</em>, <strong>para alguém sem educação</strong> (educ = 0).</li>
+<li><code>I(educ * exper)</code>: O coeficiente de interação indica que o efeito combinado de educação e experiência no salário é positivo. Especificamente, para cada ano adicional de educação, o efeito da experiência no salário aumenta em aproximadamente 0.32%, e vice-versa.</li>
+</ul>
+<p>De notar que o coeficiente da variável <code>exper</code> não é estatisticamente diferente de zero para nenhum nível de significância estatística.</p>
+</section>
+<section id="entre-variáveis-dummy" class="level3">
+<h3 class="anchored" data-anchor-id="entre-variáveis-dummy">entre variáveis dummy</h3>
+<p>Recorrendo ao conjunto de dados anterior (<code>wage2</code>), onde a variável <code>married</code> indica se o indivíduo é casado (1) ou não (0) e a variável dummy <code>urban</code> indica se o indivíduo vive numa área urbana (1) ou não (0), vamos estimar o modelo de regressão com termos de interação entre variáveis dummy:</p>
+<p><span id="eq-reg-interacao-dummy"><span class="math display">\[
+\log(wage_i) = \beta_0 + \beta_1 educ_i + \beta_2 exper_i + \beta_3 married_i + \beta_4 urban_i + \beta_5 (married_i \times urban_i) + u_i
+\tag{11}\]</span></span></p>
+<p>no <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co">#estimar modelo de regressão com interacção entre dummies</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>modelo_interacoes_dummy <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(wage) <span class="sc">~</span> educ <span class="sc">+</span> exper <span class="sc">+</span> married <span class="sc">+</span> </span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>                            urban <span class="sc">+</span> <span class="fu">I</span>(married <span class="sc">*</span> urban), <span class="at">data =</span> wage2)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_interacoes_dummy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = log(wage) ~ educ + exper + married + urban + I(married * 
+    urban), data = wage2)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.94789 -0.22230  0.02629  0.24607  1.22611 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)         5.198499   0.134840  38.553  &lt; 2e-16 ***
+educ                0.075924   0.006374  11.911  &lt; 2e-16 ***
+exper               0.018587   0.003207   5.796 9.29e-09 ***
+married             0.240197   0.083079   2.891  0.00393 ** 
+urban               0.204342   0.090328   2.262  0.02391 *  
+I(married * urban) -0.028581   0.094926  -0.301  0.76341    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.3799 on 929 degrees of freedom
+Multiple R-squared:  0.1905,    Adjusted R-squared:  0.1861 
+F-statistic: 43.71 on 5 and 929 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>interpretação dos coeficientes: - <span class="math inline">\(\beta_0\)</span> (constante): O salário médio para alguém com 0 anos de educação, 0 anos de experiência, que não é casado e que não vive numa área urbana é de 180.91 US$ (<code>exp(5.198)</code>).</p>
+<ul>
+<li><p><span class="math inline">\(\beta_1\)</span> (educ): Cada ano adicional de educação está associado a um aumento médio de aproximadamente 7.5 % no salário, <em>ceteris paribus</em>.</p></li>
+<li><p><span class="math inline">\(\beta_2\)</span> (exper): Cada ano adicional de experiência está associado a um aumento médio de aproximadamente 1.8% no salário, <em>ceteris paribus</em>.</p></li>
+<li><p><span class="math inline">\(\beta_3\)</span> (married): Ser casado está associado a um aumento médio de aproximadamente 24.20% no salário, <em>ceteris paribus</em>, <strong>para alguém sem experiência e sem educação</strong> (exper = 0, educ = 0).</p></li>
+<li><p><span class="math inline">\(\beta_4\)</span> (urban): Viver numa área urbana está associado a um aumento médio de aproximadamente 20.4.% no salário, <em>ceteris paribus</em>, <strong>para alguém sem experiência e sem educação</strong> (exper = 0, educ = 0).</p></li>
+<li><p><span class="math inline">\(\beta_5\)</span> (married * urban): O coeficiente de interação indica que o efeito combinado de ser casado e viver em uma área urbana no salário é negativo. Especificamente, para indivíduos casados e viver numa área urbana, o efeito combinado no salário é de aproximadamente -2.86% em relação ao efeito individual de ser casado e viver numa área urbana.</p></li>
+</ul>
+<p>No termo de interação entre variáveis dummy, neste caso <code>married</code> e <code>urban</code>, o 1 (da multiplicaão) corresponde a indivíduos que são casados e vivem numa área urbana (1<em>1), o 0 (da multiplicação) corresponde a indivíduos que não são casados e não vivem numa área urbana (0</em>0), e os outros dois casos (1<em>0 e 0</em>1) correspondem a indivíduos que são casados mas não vivem numa área urbana ou que não são casados mas vivem numa área urbana. Portanto, o coeficiente do termo de interação mede o efeito adicional de ser casado e viver numa área urbana em comparação com os efeitos individuais de ser casado e viver numa área urbana. Se criarmos uma tabela com os diferentes grupos, podemos ver melhor a interpretação de cada caso: ou seja:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 21%">
+<col style="width: 12%">
+<col style="width: 24%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>married</th>
+<th>urban</th>
+<th>Interação (= married × urban)</th>
+<th>log(wage) previsto</th>
+<th>wage previsto (e^{})</th>
+<th>Interpretação</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td><span class="math inline">\(\beta_0\)</span></td>
+<td><span class="math inline">\(e^{\beta_0}\)</span></td>
+<td>Não casado, não vive numa área urbana</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td><span class="math inline">\(\beta_0 + \beta_3\)</span></td>
+<td><span class="math inline">\(e^{\beta_0 + \beta_3}\)</span></td>
+<td>Casado, não vive numa área urbana</td>
+</tr>
+<tr class="odd">
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td><span class="math inline">\(\beta_0 + \beta_4\)</span></td>
+<td><span class="math inline">\(e^{\beta_0 + \beta_4}\)</span></td>
+<td>Não casado, vive numa área urbana</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td><span class="math inline">\(\beta_0 + \beta_3 + \beta_4 + \beta_5\)</span></td>
+<td><span class="math inline">\(e^{\beta_0 + \beta_3 + \beta_4 + \beta_5}\)</span></td>
+<td>Casado, vive numa área urbana</td>
+</tr>
+</tbody>
+</table>
+<p>De notar que no modelo <a href="#eq-reg-interacao-dummy" class="quarto-xref">Equation&nbsp;11</a> o coeficiente do termo de interação não é estatisticamente diferente de zero para nenhum nível de significância estatística. Ou seja, não existe evidência estatística de que o efeito combinado de ser casado e viver numa área urbana no salário seja diferente do efeito individual de ser casado e viver numa área urbana, o que também é um resultado interessante.</p>
+</section>
+<section id="entre-variáveis-dummy-e-contínuas" class="level3">
+<h3 class="anchored" data-anchor-id="entre-variáveis-dummy-e-contínuas">entre variáveis dummy e contínuas</h3>
+<p>Para esta aplicação vamos considerar o mesmo conjunto de dados <code>wage2</code> e vamos estimar a regressão com o termo de interação entre a variável dummy <code>south</code> e a variável contínua <code>educ</code>:</p>
+<p><span id="eq-reg-interacao-dummy-cont"><span class="math display">\[
+\log(wage_i) = \beta_0 + \beta_1 educ_i + \beta_2 exper_i + \beta_3 south_i + \beta_4 (south_i \times educ_i) + u_i
+\tag{12}\]</span></span></p>
+<p>no <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co">#carregar dados</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"wage2"</span>)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar modelo</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>modelo_interacoes_dummy_cont <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(wage) <span class="sc">~</span> educ <span class="sc">+</span> exper <span class="sc">+</span> south <span class="sc">+</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>                                     <span class="fu">I</span>(south <span class="sc">*</span> educ), <span class="at">data =</span> wage2)</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_interacoes_dummy_cont)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = log(wage) ~ educ + exper + south + I(south * educ), 
+    data = wage2)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.93539 -0.23116  0.02579  0.25730  1.28557 
+
+Coefficients:
+                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)      5.699845   0.122511  46.525  &lt; 2e-16 ***
+educ             0.066953   0.007543   8.876  &lt; 2e-16 ***
+exper            0.019671   0.003256   6.041 2.21e-09 ***
+south           -0.464313   0.167538  -2.771  0.00569 ** 
+I(south * educ)  0.024110   0.012422   1.941  0.05257 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.3868 on 930 degrees of freedom
+Multiple R-squared:  0.1601,    Adjusted R-squared:  0.1564 
+F-statistic: 44.31 on 4 and 930 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Em que a interpretação dos coeficientes é a seguinte:</p>
+<ul>
+<li><p><span class="math inline">\(\beta_0\)</span> (constante): O salário médio para alguém com 0 anos de educação, 0 anos de experiência e que não vive no sul é de 298.87 US$ (<code>exp(5.70)</code>).</p></li>
+<li><p><span class="math inline">\(\beta_1\)</span> (educ): Cada ano adicional de educação está associado a um aumento médio de aproximadamente 6.7% no salário, <em>ceteris paribus</em>, <strong>para alguém que não vive no sul</strong> (south = 0).</p></li>
+<li><p><span class="math inline">\(\beta_2\)</span> (exper): Cada ano adicional de experiência está associado a um aumento médio de aproximadamente 2% no salário, <em>ceteris paribus</em>.</p></li>
+<li><p><span class="math inline">\(\beta_3\)</span> (south): Viver no sul está associado a uma diminuição média de aproximadamente 46.4% no salário, <em>ceteris paribus</em>, <strong>para alguém sem anos de educação</strong> (educ = 0).</p></li>
+<li><p><span class="math inline">\(\beta_4\)</span> (south * educ): O coeficiente de interação indica que o efeito combinado de viver no sul e anos de educação no salário é positivo. Especificamente, para cada ano adicional de educação, o efeito de viver no sul no salário aumenta em aproximadamente 2.41%, <em>ceteris paribus</em>.</p></li>
+</ul>
+<p>O efeito marginal da educação no salário para diferentes níveis de experiência é dado por: <span id="eq-efeito-marginal-educacao-dummy"><span class="math display">\[
+\frac{\partial \log(wage)}{\partial educ} = \beta_1 + \beta_4 \times south
+\tag{13}\]</span></span></p>
+<p>Portanto, o efeito marginal da educação varia com o valor da variável dummy <code>south</code>. Podemos calcular o efeito marginal da educação para os dois grupos (south = 0 e south = 1):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Coeficientes do modelo</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>coeficientes <span class="ot">&lt;-</span> <span class="fu">coef</span>(modelo_interacoes_dummy_cont)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular efeito marginal da educação para os dois grupos</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>efeito_marginal_educacao <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">south =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">efeito_marginal =</span> <span class="fu">c</span>(coeficientes[<span class="st">"educ"</span>] <span class="sc">+</span> <span class="dv">0</span> <span class="sc">*</span> coeficientes[<span class="st">"I(south * educ)"</span>],</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>                      coeficientes[<span class="st">"educ"</span>] <span class="sc">+</span> <span class="dv">1</span> <span class="sc">*</span> coeficientes[<span class="st">"I(south * educ)"</span>])</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>efeito_marginal_educacao</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  south efeito_marginal
+1     0      0.06695309
+2     1      0.09106290</code></pre>
+</div>
+</div>
+<p>Para indivíduos que não vivem no sul (south = 0), cada ano adicional de educação está associado a um aumento médio de aproximadamente 6.7% no salário, <em>ceteris paribus</em>. Para indivíduos que vivem no sul (south = 1), cada ano adicional de educação está associado a um aumento médio de aproximadamente 9.11% no salário, <em>ceteris paribus</em>.</p>
+</section>
+</section>
+<section id="modelos-não-lineares" class="level2">
+<h2 class="anchored" data-anchor-id="modelos-não-lineares">Modelos Não Lineares</h2>
+<p>Modelos não lineares são modelos em que a relação entre a variável dependente e uma ou mais variáveis independentes não é linear. A equação do modelo não linear para a variável dependente <code>y</code> e para as variáveis independentes <code>X</code> é dada por:</p>
+<p><span id="eq-reg-nao-linear"><span class="math display">\[
+y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{1i}^2 + u_i
+\tag{14}\]</span></span></p>
+<p>em que <span class="math inline">\(\beta_0\)</span> é a constante, <span class="math inline">\(\beta_1\)</span> é o coeficiente da variável independente <code>x1</code>, <span class="math inline">\(\beta_2\)</span> é o coeficiente do termo quadrático da variável independente <code>x2</code> e <span class="math inline">\(u_i\)</span> é o termo de erro. O modelo é estimado pelo método dos mínimos quadrados ordinários. Quando devemos estimar um modelo não linear? Uma abordagem comum é a análise gráfica. Se a relação entre a variável dependente e a variável independente não for aproximadamente linear, pode ser apropriado considerar um modelo não linear. Outra abordagem é incluir termos polinomiais (como o termo quadrático) na regressão e verificar se esses termos são estatisticamente diferentes de 0. Existem alguma forma de lidar com a não linearidade sem recorrer a modelos não lineares, como por exemplo, transformar as variáveis (logaritmos).</p>
+<p>Um exemplo de um modelo que poderá ser não linear é a relação entre o preço das casas e a distância à autoestrada mais próxima. Vamos considerar o conjunto de dados <code>hprice2</code> da biblioteca <code>wooldridge</code>, que contém informações sobre o preço das casas (<code>price</code>), a distância à autoestrada mais próxima (<code>dist</code>) e outras características das casas. Mais informação sobre o conjunto de dados pode ser obtida com <code>?hprice2</code>.</p>
+<p>Para esta aplicação vamos estimar o modelo:</p>
+<p><span id="eq-reg-nao-linear-hprice"><span class="math display">\[
+\log(price_i) = \beta_0 + \beta_1 dist_i + \beta_2 dist_i^2 + u_i
+\tag{15}\]</span></span></p>
+<p>no <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wooldridge)</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"hprice3"</span>)</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar modelo de regressão não linear</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>modelo_nao_linear <span class="ot">&lt;-</span> <span class="fu">lm</span>(price <span class="sc">~</span> inst <span class="sc">+</span> <span class="fu">I</span>(inst<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> hprice3)</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_nao_linear)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = price ~ inst + I(inst^2), data = hprice3)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-82012 -25286  -8394  20140 194917 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  3.443e+04  7.340e+03   4.691 4.04e-06 ***
+inst         8.618e+00  1.013e+00   8.510 6.95e-16 ***
+I(inst^2)   -2.276e-04  2.953e-05  -7.708 1.64e-13 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 38860 on 318 degrees of freedom
+Multiple R-squared:  0.1969,    Adjusted R-squared:  0.1918 
+F-statistic: 38.98 on 2 and 318 DF,  p-value: 7.228e-16</code></pre>
+</div>
+</div>
+<p>A interpretação do termo de interação é a seguinte:</p>
+<ul>
+<li><span class="math inline">\(\beta_2\)</span> (I(inst^2)): O coeficiente do termo quadrático indica que o efeito da distância no preço da casa não é constante. Especificamente, o efeito da distância no preço da casa diminui à medida que a distância aumenta. Isto sugere que o impacto inicial de uma casa estar afastada da autoestrada é maior do que o impacto adicional de uma casa ainda mais afastada. O coeficiente do termo quadrático é -0,0002276, o que indica que para cada unidade de aumento na distância, o efeito da distância no preço da casa diminui em aproximadamente 0,0002276 dólares, <em>ceteris paribus</em>. O efeito é muito pequeno o que pode estar relacionado com a escala da variável <code>inst</code> (distância em pés), 1 pé são aproximadamente 0.3048 metros.</li>
+</ul>
+<p>Vamos converter a variável <code>inst</code> de pés para quilómetros (1 pé = 0.0003048 km) e re-estimar o modelo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Converter inst de pés para quilómetros</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>hprice3 <span class="ot">&lt;-</span> hprice3 <span class="sc">%&gt;%</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">inst_km =</span> inst <span class="sc">*</span> <span class="fl">0.0003048</span>)</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar modelo de regressão não linear com inst em km</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>modelo_nao_linear_km <span class="ot">&lt;-</span> <span class="fu">lm</span>(price <span class="sc">~</span> inst_km <span class="sc">+</span> <span class="fu">I</span>(inst_km<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> hprice3)</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_nao_linear_km)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = price ~ inst_km + I(inst_km^2), data = hprice3)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-82012 -25286  -8394  20140 194917 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   34434.5     7339.9   4.691 4.04e-06 ***
+inst_km       28275.8     3322.5   8.510 6.95e-16 ***
+I(inst_km^2)  -2449.7      317.8  -7.708 1.64e-13 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 38860 on 318 degrees of freedom
+Multiple R-squared:  0.1969,    Adjusted R-squared:  0.1918 
+F-statistic: 38.98 on 2 and 318 DF,  p-value: 7.228e-16</code></pre>
+</div>
+</div>
+<p>A interpretação dos coeficientes é a seguinte:</p>
+<ul>
+<li><p><span class="math inline">\(\beta_0\)</span> (constante): O preço médio de uma casa localizada exatamente na autoestrada (distância = 0 km) é de aproximadamente 34434.5 dólares.</p></li>
+<li><p><span class="math inline">\(\beta_1\)</span> (inst_km): Cada quilómetro adicional de distância à autoestrada está associado a uma diminuição média de aproximadamente 28278.80 dólares no preço da casa, <em>ceteris paribus</em>.</p></li>
+<li><p><span class="math inline">\(\beta_2\)</span> (I(inst_km^2)): O coeficiente do termo quadrático indica que o efeito da distância no preço da casa não é constante. Especificamente, o efeito da distância no preço da casa diminui à medida que a distância aumenta. Isto sugere que o impacto inicial de uma casa estar afastada da autoestrada é maior do que o impacto adicional de uma casa ainda mais afastada. O coeficiente do termo quadrático é -2449.70, o que indica que para cada quilómetro de aumento na distância, o efeito da distância no preço da casa diminui em aproximadamente 2449.70 dólares, <em>ceteris paribus</em>.</p></li>
+</ul>
+<p>Se o coeficiente do termo quadrático fosse positivo, indicava que o efeito da distância no preço da casa aumentaria à medida que a distância aumenta, o que poderia sugerir que casas mais afastadas da autoestrada são mais valorizadas.</p>
+<p>Também é possível calcular o efeito marginal da distância no preço da casa. O efeito marginal da distância é dado por:</p>
+<p><span id="eq-efeito-marginal-distancia"><span class="math display">\[
+\frac{\partial y}{\partial x} = \beta_1 + 2 \beta_2 x
+\tag{16}\]</span></span></p>
+<p>Portanto, o efeito marginal da distância varia com o nível de distância. Podemos calcular o efeito marginal da distância para diferentes níveis de distância (0, 1, 2, 5, 10 unidades):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Níveis de distância para calcular o efeito marginal</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>niv_distancia <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Coeficientes do modelo</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>coeficientes <span class="ot">&lt;-</span> <span class="fu">coef</span>(modelo_nao_linear_km)</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular efeito marginal para diferentes níveis de distância</span></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>efeito_marginal <span class="ot">&lt;-</span> coeficientes[<span class="st">"inst_km"</span>] <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> coeficientes[<span class="st">"I(inst_km^2)"</span>] <span class="sc">*</span> niv_distancia</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>efeito_marginal</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  28275.79  23376.30  18476.81   3778.34 -20719.11</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar data frame com os resultados obtidos</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">Nivel_Distancia =</span> niv_distancia,</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">Efeito_Marginal_Distancia =</span> efeito_marginal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Nivel_Distancia Efeito_Marginal_Distancia
+1               0                  28275.79
+2               1                  23376.30
+3               2                  18476.81
+4               5                   3778.34
+5              10                 -20719.11</code></pre>
+</div>
+</div>
+<p>Com isto podemos ver que o efeito marginal da distância no preço da casa diminui à medida que a distância aumenta (relação de U invertido). Por exemplo, para uma casa localizada exatamente na autoestrada (<code>inst_km = 0</code>), o efeito marginal da distância é de aproximadamente 28275.79 dólares. Isto significa que se a casa estiver afastada 1 unidade da autoestrada, o preço da casa aumentará em aproximadamente 23376.30 doláres, <em>ceteris paribus</em>. No entanto, para uma casa localizada a 10 unidades da autoestrada (<code>inst_km = 10</code>), o efeito marginal da distância é de aproximadamente -20719.11 dólares. Portanto existe um ponto em que o efeito marginal da distância se torna negativo (<em>turning point</em>), ou seja, a partir desse ponto, aumentar a distância à autoestrada está associado a uma diminuição no preço da casa. Podemos calcular o ponto de inversão (máximo da função) do efeito marginal da distância resolvendo a equação:</p>
+<p><span id="eq-ponto-inversao"><span class="math display">\[
+\frac{\partial price}{\partial inst} = 0  \implies \beta_1 + 2 \beta_2 inst_i = 0 \implies inst_i = -\frac{\beta_1}{2 \beta_2}
+\tag{17}\]</span></span></p>
+<p>no <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular ponto de inversão</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>ponto_inversao <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">coef</span>(modelo_nao_linear_km)[<span class="st">"inst_km"</span>] <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> <span class="fu">coef</span>(modelo_nao_linear_km)[<span class="st">"I(inst_km^2)"</span>])</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>ponto_inversao</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>inst_km 
+5.77117 </code></pre>
+</div>
+</div>
+<p>A partir da distância de aproximadamente 5.77 km, o efeito marginal da distância no preço da casa torna-se negativo, o que indica que aumentar a distância à autoestrada está associado a uma diminuição no preço da casa. Isto faz todo o sentido, pois se a casa está demasiado perto da autoestrada, o ruído, a poluição e o trãnsito podem diminuir o valor da casa. No entanto, se a casa está demasiado longe da autoestrada, a acessibilidade pode ser um fator negativo para o valor da casa.</p>
+<p>Podemos calcular o valor máximo do preço da casa substituindo o ponto de inversão na equação do modelo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular valor máximo do preço da casa</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>valor_maximo_preco <span class="ot">&lt;-</span> <span class="fu">predict</span>(modelo_nao_linear_km, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">inst_km =</span> ponto_inversao))</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>valor_maximo_preco</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> inst_km 
+116026.7 </code></pre>
+</div>
+</div>
+<p>A mesma abordagem pode ser seguida para modelos com mais variáveis, por exemplo, incluindo a variável <code>area</code> (área da casa) e a variável <code>rooms</code> (número de quartos):</p>
+<p><span id="eq-reg-nao-linear-hprice-2"><span class="math display">\[
+\log(price_i) = \beta_0 + \beta_1 inst_i + \beta_2 inst_i^2 + \beta_3 area_i + \beta_4 rooms_i + u_i
+\tag{18}\]</span></span></p>
+<p>no <code>R</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimar modelo de regressão não linear com mais variáveis</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>modelo_nao_linear_2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(price) <span class="sc">~</span> inst_km <span class="sc">+</span> <span class="fu">I</span>(inst_km<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>                            <span class="sc">+</span> area <span class="sc">+</span> rooms, <span class="at">data =</span> hprice3)</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_nao_linear_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = log(price) ~ inst_km + I(inst_km^2) + area + rooms, 
+    data = hprice3)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.27199 -0.17547 -0.01315  0.22890  0.81846 
+
+Coefficients:
+               Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)   9.947e+00  1.299e-01  76.583  &lt; 2e-16 ***
+inst_km       1.668e-01  2.890e-02   5.773 1.86e-08 ***
+I(inst_km^2) -1.366e-02  2.706e-03  -5.046 7.61e-07 ***
+area          2.989e-04  3.018e-05   9.906  &lt; 2e-16 ***
+rooms         6.256e-02  2.365e-02   2.645  0.00858 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.3093 on 316 degrees of freedom
+Multiple R-squared:  0.508, Adjusted R-squared:  0.5017 
+F-statistic: 81.56 on 4 and 316 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular ponto de inversão</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>ponto_inversao_2 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">coef</span>(modelo_nao_linear_2)[<span class="st">"inst_km"</span>] <span class="sc">/</span> (<span class="dv">2</span> <span class="sc">*</span> <span class="fu">coef</span>(modelo_nao_linear_2)[<span class="st">"I(inst_km^2)"</span>])</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>ponto_inversao_2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> inst_km 
+6.107991 </code></pre>
+</div>
+</div>
+<p>A interpretação dos coeficientes é a seguinte:</p>
+<ul>
+<li><p><span class="math inline">\(\beta_0\)</span> (constante): O preço médio de uma casa localizada exatamente na autoestrada (distância = 0 km), com área igual a 0 e 0 quartos é de aproximadamente 9947 dólares. Neste caso a constante não tem uma interpretação prática, pois é praticamente uma casa estar na autoestrada, com área igual a 0 e 0 quartos.</p></li>
+<li><p><span class="math inline">\(\beta_1\)</span> (inst_km): Cada quilómetro adicional de distância à autoestrada está associado a um aumento médio de aproximadamente 0.17 dólares no preço da casa, <em>ceteris paribus</em>.</p></li>
+<li><p><span class="math inline">\(\beta_2\)</span> (I(inst_km^2)): O coeficiente do termo quadrático indica que o efeito da distância no preço da casa não é constante. Especificamente, o efeito da distância no preço da casa diminui à medida que a distância aumenta. Isto sugere que o impacto inicial de uma casa estar afastada da autoestrada é maior do que o impacto adicional de uma casa ainda mais afastada. O coeficiente do termo quadrático é -0.01, o que indica que para cada quilómetro de aumento na distância, o efeito da distância no preço da casa diminui em aproximadamente 0.01 dólares, <em>ceteris paribus</em>.</p></li>
+<li><p><span class="math inline">\(\beta_3\)</span> (area): Cada unidade adicional de área da casa está associada a um aumento médio de aproximadamente 0.002 dólares no preço da casa, <em>ceteris paribus</em>.</p></li>
+<li><p><span class="math inline">\(\beta_4\)</span> (rooms): Cada quarto adicional na casa está associado a um aumento médio de aproximadamente 0.06 dólares no preço da casa, <em>ceteris paribus</em>.</p></li>
+</ul>
+<p>O <em>ceteris paribus</em> é interpretado como “para uma casa com as mesmas características, com exceção da variável em questão”.</p>
+<p>O ponto de inversão (máximo da função) do efeito marginal da distância é de aproximadamente 6.11 km. É a partir desta distância que o efeito marginal da distância no preço da casa se torna negativo.</p>
+<p>Podemos ter também o termo ao cubo. Ao aumentar o grau do polinómio, o modelo torna-se mais flexível, podendo capturar relações mais complexas entre as variáveis. No entanto, também pode levar a problemas de <em>overfitting</em>, onde o modelo se ajusta demasiado aos dados e não pode ser generalizado para novos dados. Por isso, temos de mantar sempre um equilíbrio entre a complexidade e a interpretação do modelo.</p>
+</section>
+<section id="modelo-com-o-desvio-padrão-robusto" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-com-o-desvio-padrão-robusto">Modelo com o desvio padrão robusto</h2>
+<p>Para calcular o desvio padrão robusto para a heterocedasticidade no <code>R</code>, podemos utilizar a função <code>vcovHC()</code> do pacote <code>sandwich</code>. A função <code>vcovHAC()</code> do mesmo pacote permite calcular o desvio padrão robusto a autocorrelação e heterocedasticidade. A função <code>coeftest()</code> do pacote <code>lmtest</code> pode ser utilizada para apresentar os resultados da regressão com o desvio padrão robusto.</p>
+<p>Os argumentos da função <code>vcovHC()</code> permitem especificar o tipo de matriz de covariância robusta a ser utilizada. O argumento <code>type</code> pode assumir os seguintes valores:</p>
+<ul>
+<li><code>"HC0"</code>: Matriz de covariância robusta de White (1980).</li>
+<li><code>"HC1"</code>: Matriz de covariância robusta de MacKinnon e White (1985), que ajusta a matriz de covariância de White para amostras pequenas.</li>
+<li><code>"HC2"</code>: Matriz de covariância robusta de Long e Ervin (1983), que ajusta a matriz de covariância de White para amostras pequenas, considerando o número de regressoras.</li>
+<li><code>"HC3"</code>: Matriz de covariância robusta de Davidson e MacKinnon (1993), que ajusta a matriz de covariância de White para amostras pequenas, considerando o número de regressoras e o número de observações.</li>
+<li><code>"HC4"</code>: Matriz de covariância robusta de Cribari-Neto (2004), que ajusta a matriz de covariância de White para amostras pequenas, considerando o número de regressoras e o número de observações, com um ajuste adicional para observações influentes.</li>
+<li><code>"HC4m"</code>: Matriz de covariância robusta de Cribari-Neto (2004), que é uma versão modificada da HC4, com um ajuste adicional para observações influentes.</li>
+<li><code>"HC5"</code>: Matriz de covariância robusta de Pustejovsky e Tipton (2018), que é uma versão modificada da HC4, com um ajuste adicional para observações influentes, considerando o número de regressoras e o número de observações.</li>
+</ul>
+<p>A função <code>vcovHAC()</code> permite especificar o número de desfasamentos a considerar na matriz de covariância robusta para autocorrelação e heterocedasticidade, através do argumento <code>lag</code>.</p>
+</section>
+<section id="modelo-dos-mínimos-quadrados-ponderados-wls" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-dos-mínimos-quadrados-ponderados-wls">Modelo dos Mínimos Quadrados Ponderados (WLS)</h2>
+</section>
+<section id="modelo-generalizado-de-mínimos-quadrados-gls" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-generalizado-de-mínimos-quadrados-gls">Modelo Generalizado de Mínimos Quadrados (GLS)</h2>
+<p>função <code>gls()</code> do pacote <code>nlme</code> permite estimar modelos de regressão linear com erros que podem ter diferentes estruturas de correlação e variância. A função <code>gls()</code> é particularmente útil quando os pressupostos clássicos da regressão linear (como homocedasticidade e independência dos erros) não são verificados.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
