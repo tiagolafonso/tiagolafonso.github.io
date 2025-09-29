@@ -1,0 +1,1786 @@
+# Avaliação dos Modelos de Regressão {#sec-avaliacao-modelos}
+
+Para da significância estatística dos coeficientes e do modelo existem outros testes para assegurar a validade dos resultados. Existem testes de diagnóstico ao erros (heterocedasticidade, autocorrelação, normalidade), ao modelo (especificação), às variáveis (multicolinearidade), à estabilidade (estabilidade dos coeficientes e do modelo). Além disso, existem critérios para comparar modelos alternativos (R², AIC, BIC), métodos de selecção de modelos (stepwise, validação cruzada) e técnicas para identificar observações influentes.
+
+## Diagnóstico da Multicolinearidade {#sec-multicolinearidade}
+
+Existem várias formas de detectar a multicolinearidade entre as variáveis independentes num modelo de regressão. Vamos utilizar os dados do ficheiro `m_reg.xlsx`. O ficheiro pode ser descarregado em https://github.com/tiagolafonso/Files_Intro_Applied_Econometrics. Os dados foram recolhidos no *World Development Indicators* e contêm as seguintes variáveis:
+
+| Código | Descrição |
+|-----------------------|------------------------------------------------|
+| gdp | PIB (preços constantes, moeda local) |
+| air | Transporte aéreo, passageiros transportados |
+| rail | Transporte ferroviário, passageiros transportados (milhões de passageiros) |
+| agri | Agricultura, silvicultura e pesca, valor acrescentado (preços constantes, moeda local) |
+| ind | Indústria (incluindo construção), valor acrescentado (preços constantes, moeda local) |
+| man | Indústria transformadora, valor acrescentado (preços constantes, moeda local) |
+| ser | Serviços, valor acrescentado (preços constantes, moeda local) |
+| x | Exportações de bens e serviços (preços constantes, moeda local) |
+| m | Importações de bens e serviços (preços constantes, moeda local) |
+| gfcf | Formação bruta de capital fixo (preços constantes, moeda local) |
+
+Importar os dados para o `R`:
+
+```{r}
+#| label: carr_dados_mreg
+#| output: false
+
+#limpar ambiente
+rm(list = ls())
+
+# carregar bibliotecas necessárias
+library(readxl)
+library(tidyverse)
+
+#importar dados
+m_reg <- read_excel("m_reg.xlsx")
+```
+
+Neste exemplo, vamos analisar a multicolinearidade para as variáveis independentes para o modelo:
+
+$$
+gdp_t=\beta_0 + \beta_1 ind_t + \beta_2 ser_t + \beta_3 agri_t + \beta_4 man_t + \mu_t
+$$ {#eq-reg-multi}
+
+### Análise gráfica
+
+Para a análise gráfico podemos fazer de duas formas: através de um gráfico de dispersão entre duas variáveis, ou através de dois gráficos de linhas comparando as séries temporais das variáveis.
+
+O grafíco de dispersão entre duas variáveis pode ser feito com a função `ggplot()`. Para este exemplo camos comparar a variável `man` com a `ind`:
+
+```{r}
+#| label: grafico_dispersao_man_ind
+ggplot(m_reg, aes(x = man, y = ind)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 2.5) +
+  labs(title = "Gráfico de Dispersão: man vs ind",
+       x = "Indústria Transformadora",
+       y = "Indústria") +
+       theme_minimal() + #tema para o gráfico
+       theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray50"),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+```
+
+Através do gráfico de dispersão, podemos observar a relação entre as variáveis `man` e `ind`, o que pode indicar a presença de multicolinearidade imperfeita. Pois parece existe uma relação linear entre as duas variáveis (é possível fazer uma regressão linear bem ajustada para representar as observações). Se não fosse possível fazer uma regressão linear bem ajustada, poderíamos considerar que não há multicolinearidade entre as duas variáveis.
+
+Para o gráfico de linhas:
+
+```{r}
+#| label: graf_linhas
+
+# Criar dados para o gráfico
+dados_graf <- data.frame(
+     tempo = 1:nrow(m_reg),
+     man = m_reg$man,
+     ind = m_reg$ind
+)
+
+# Gráfico combinado
+ggplot(dados_graf, aes(x = tempo)) +
+     geom_line(aes(y = man, color = "Indústria Transformadora"), size = 1.2) +
+     geom_line(aes(y = ind, color = "Indústria"), size = 1.2) +
+     scale_color_manual(values = c("Indústria Transformadora" = "steelblue", 
+                                   "Indústria" = "red")) +
+     labs(title = "Comparação das Séries Temporais: man vs ind",
+                x = "Tempo",
+                y = "Valor",
+                color = "Variáveis") +
+     theme_minimal() +
+     theme(legend.position = "bottom")
+```
+
+O comportamento das séries ao longo do tempo é muito semelhantes, o que pode indicar a presença de multicolinearidade imperfeita.
+
+### Matriz das correlações
+
+Outra forma de detetar a multicolinearidade é através da matriz de correlação. A matriz de correlação mostra o grau de associação linear entre as variáveis. Cada valor na matriz varia entre -1 e 1, onde valores próximos de 1 ou -1 indicam uma forte correlação, o que pode indicar a presença de multicolinearidade.
+
+Para a matriz de correlação, podemos utilizar a função `cor()` do `R`. Vamos calcular a matriz de correlação para as variáveis de interesse do conjunto de dados `m_reg`.
+
+```{r}
+#| label: matriz_correlacao
+
+# selecionar variáveis de interesse
+mreg_sel <- m_reg %>%
+    select(ind, ser, agri, man)
+# Matriz de correlação
+cor_matrix <- cor(mreg_sel)
+cor_matrix
+
+```
+
+Onde podemos ver que as variáveis `ind` e `man` têm uma correlação alta, o que pode indicar a presença de multicolinearidade. Nas restantes a correlação não é assim tão elevada.
+
+Também podemos criar uma matriz gráfica com o package `corrplot`. Informações detalhadas sobre esta biblioteca podem ser encontradas em [An Introduction to corrplot Package](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html).
+
+```{r}
+#| label: corrplot
+library(corrplot)
+
+#com números
+cor_1 <- corrplot(cor_matrix, method = "number")
+
+#com círculos
+cor_2 <- corrplot(cor_matrix, method = "circle")
+
+#com números e circulos
+cor_3 <- corrplot.mixed(cor_matrix)
+```
+
+### Regressão
+
+O primeiro passo é estimar o modelo de regressão com as variáveis independentes para @eq-reg-multi:
+
+```{r}
+#| label: reg_multi
+modelo_multi <- lm(gdp ~ ind + ser + agri + man, data = m_reg)
+summary(modelo_multi)
+```
+
+No resultado anterior temos 2 de 4 variáveis que não são estatisticamente diferentes de 0 (agri`,`man\`), contudo o modelo tem um R² ajustado muito elevado (0.99), o que pode indicar a presença de multicolinearidade. Neste caso não conseguimos determinar quais as variáveis que estão a causar este problema.
+
+### Regressão entre variáveis independentes
+
+Este método consiste em estimar a regressão entre duas das variáveis independentes, ou seja, estimar a regressão do método de deteção de multicolinearidade pelo gráfico de dispersão. Quais as variáveis que devemos escolher neste caso? Com já temos uma anáilise de correlações e gráfica, já sabemos quais as que devemos testar. Caso contrário teríamos que fazer várias regressões com duas das variáveis independentes de cada vez. Para a regressão:
+
+$$
+man_t = \beta_0 + \beta_1 ind_t + \epsilon_t
+$$
+
+No `R`:
+
+```{r}
+#| label: reg_multi_ind
+
+modelo_ind <- lm(man ~ ind - 1, data = m_reg)
+summary(modelo_ind)
+```
+
+O R² é muito elevado (0.999), o que indica a presença de multicolinearidade entre as variáveis `man` e `ind`. O que indique que a variação de `man` pode ser explicada em grande parte pela variação de `ind`.
+
+em que graficamente:
+
+```{r}
+#| label: grafico_reg_multi_ind
+
+ggplot(m_reg, aes(x = ind, y = man)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 5.5) +
+  geom_smooth(method = "lm", 
+              formula = y ~ x - 1, 
+              color = "red", se = FALSE, 
+              alpha = 0.2) +
+  labs(title = "Regressão Linear: Indústria vs Indústria Transformadora",
+       x = "Indústria (ind)",
+       y = "Indústria Transformadora (man)") +
+  theme_minimal() + #tema para o gráfico
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+```
+
+A conclusão permance, suspeitamos que existe multicolinearidade imperfeita entre estas duas variáveis. També poderíamos inverter a variável dependente pela independente:
+
+```{r}
+#| label: reg_multi_ind_inv
+
+modelo_ind_inv <- lm(ind ~ man - 1, data = m_reg)
+summary(modelo_ind_inv)
+```
+
+Em que podemos observar a mesma conclusão.
+
+### Teste VIF
+
+Por último o teste VIF que é o mais utilizado em econometria. O teste VIF consiste em calcular para cada uma das variáveis independentes quanto a variância de um coeficiente da regressão é inflacionada devido à presença de multicolinearidade. O VIF é dado por:
+
+$$
+VIF_i = \frac{1}{1 - R^2_i}
+$$ {#eq-vif}
+
+em que $R^2_i$ é o coeficiente de determinação da regressão da variável $X_i$ em função das restantes variáveis independentes. Para a equação @eq-reg-multi (objeto `modelo_multi`) vamos estimar a regressão de cada variável independente em função das restantes:
+
+```{r}
+#| label: vif_ind
+
+modelo_multi_ind <- lm(ind ~ ser + agri + man, 
+                      data = m_reg)
+modelo_multi_ser <- lm(ser ~ ind + agri + man, 
+                       data = m_reg)
+modelo_multi_agri <- lm(agri ~ ind + ser + man, 
+                        data = m_reg)
+modelo_multi_man <- lm(man ~ ind + ser + agri, 
+                       data = m_reg)
+```
+
+Agora vamos extrair o `R^2` de cada uma das regressões (`$r.squared`) e calcular o VIF com a @eq-vif:
+
+```{r}
+# Extrair R²
+r2_ind <- summary(modelo_multi_ind)$r.squared
+r2_ser <- summary(modelo_multi_ser)$r.squared
+r2_agri <- summary(modelo_multi_agri)$r.squared
+r2_man <- summary(modelo_multi_man)$r.squared
+
+# Calcular VIF
+vif_ind <- 1 / (1 - r2_ind)
+vif_ser <- 1 / (1 - r2_ser)
+vif_agri <- 1 / (1 - r2_agri)
+vif_man <- 1 / (1 - r2_man)
+
+#mostrar o VIF
+vif_values <- data.frame(
+  Variable = c("Indústria",
+                "Serviços",
+                "Agricultura",
+                "Indústria Transformadora"),
+  VIF = c(vif_ind, vif_ser, vif_agri, vif_man)
+)
+print(vif_values)
+```
+
+Em alternativa, e esta bem mais prática, podemos usar a função `vif()` da biblioteca `car`:
+
+```{r}
+#| label: vif_car
+library(car)
+vif(modelo_multi)
+```
+
+A biblioteca `performance` pode ser utilizada para calcular o VIF e outras métricas para uma análise de colinearidade mais informativa. Para isso recorremos à função `check_collinearity()`.
+
+```{r}
+#| label: vif_performance
+library(performance)
+check_collinearity(modelo_multi)
+```
+
+Esta função (mais info `?check_collinearity`) fornece uma visão geral da colinearidade entre as variáveis independentes. Separa as variáveis em grupos com base na sua colinearidade (baixa e alta). apresenta também o Intervalo de confiança para o VIF (`VIF 95% CI`). Apresenta mais duas métricas como a `Increased SE` que indica o aumento percentual do erro padrão do coeficiente devido à colinearidade, e a `Tolerance` que é o inverso do VIF (1/VIF). Análise para a variável `man`:
+
+-   `Increased SE`:6.44 - 6.44 vezes maior que o desvio padrão esperado para o coeficiente
+-   `Tolerance`:0.02 - Indica que apenas 2% da variância é independente
+
+Portanto, podemos concluir que existe uma forte multicolinearidade.
+
+## Diagnóstico da Heterocedasticidade {#sec-heterocedasticidade}
+
+Para esta aplicação vamos utilizar o conjunto de dados `hprice1` da biblioteca `wooldridge`.
+
+```{r}
+#| label: carr_hprice
+#| output: false
+# Carregar bibliotecas necessárias
+library(wooldridge)
+library(tidyverse)
+
+# Carregar dados
+data("hprice1")
+```
+
+A heterocedasticidade é medida nos erros. Para isso, vamos utilizar o modelo base (`modelo_0`) e obter os resíduos `u_i`:
+
+```{r}
+#| label: modelo_0
+
+#estimar modelo
+modelo_0 <- lm(price ~ lotsize + sqrft + bdrms,
+                     data = hprice1)
+
+# armazenar erro no data frame
+hprice1$u_i <- residuals(modelo_0)
+summary(hprice1$u_i) #eststistica descritiva do erro
+```
+
+### Graficamente
+
+Para testar a heterocedasticidade graficamente, podemos utilizar um gráfico de dispersão dos resíduos em relação aos valores ajustados ou com outra variável independente. Se os resíduos apresentarem um padrão específico (como um funil ou uma curva), pode indicar a presença de heterocedasticidade dos erros.
+
+```{r}
+#| label: grafico-residuos_het
+# Gráfico de dispersão dos resíduos
+ggplot(hprice1, aes(x = fitted(modelo_0), y = u_i)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 2.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Gráfico de Resíduos vs Valores Ajustados",
+       x = "Valores Ajustados",
+       y = "Resíduos") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+```
+
+### Testes formais
+
+#### Teste de Breusch-Pagan
+
+Um dos testes mais utilizado para testar a heterocedasticidade é o teste de Breusch-Pagan [@breusch_simple_1979]. Os testes têm um processo semelhante como referido na secção de pressupostos de homocedasticidade do capítulo anterior. A regressão auxiliar do teste é dada por:
+
+$$
+{\mu_i}^2 = \delta_0 + \delta_1 lotsize_i + \delta_2 sqrft_i + \delta_3 bdrms_i + \sigma_i
+$$
+
+Depois de estimar vamos obter o $LM_{stat}=n*R^2$ e calcular o valor da probabilidade do $\chi^2$.
+
+No R:
+
+```{r}
+#| label: teste-bp
+#calcular u_i^2
+hprice1$u_i2 <- hprice1$u_i^2
+
+#Estimar reg-bp
+reg_bp <- lm(u_i2 ~ lotsize + sqrft + bdrms, data = hprice1)
+
+#Obter R2
+r2_bp <- summary(reg_bp)$r.squared
+
+# Obter n
+n <- nrow(hprice1)
+
+# Número de variáveis independentes - k
+k <- reg_bp$rank - 1
+
+# LM stat
+LM_stat_bp <- n * r2_bp
+
+#Obter valor P
+library(lmtest)
+p_value_bp <- 1 - pchisq(LM_stat_bp, df = k)
+p_value_bp
+```
+
+O `$r.squared` extrai o valor de R² da regressão auxiliar, que é utilizado para calcular o estatístico LM do teste de Breusch-Pagan. O `$rank` devolve o número de coeficientes (-1 para excluis a constante). A função `pchisq()` é utilizada para calcular o valor p associado ao estatístico LM, com base na distribuição qui-quadrado, onde `df` é o número de variáveis independentes na regressão auxiliar (k). Este processo pode ser mais trabalhoso, mas é possível executar qualquer test de heterocedasticidade.
+
+A biblioteca `skedastic` tem várias funções para testar a heterocedasticidade. Neste caso, o teste de Breusch-Pagan pode ser obtido com a função `breusch_pagan()`:
+
+```{r}
+#| label: bp-skedastic
+library(skedastic)
+breusch_pagan(modelo_0)
+```
+
+A conclusão (o valor de P é o mesmo) é que a hipótese nula é rejeitada para qualquer nível de significância estatística. Em que **a hipótese nula do teste de heterocedasticidade é: os erros são homocedásticos**.
+
+#### Teste de Glesjer
+
+O teste de Glesjer [@glejser_new_1969] tem como a regressão auxiliar:
+
+$$
+|\mu_i| = \delta_0 + \delta_1 \cdot lotsize_i + \delta_2 \cdot sqrft_i + \delta_3 \cdot bdrms_i + \sigma_i
+$$ {#eq-glesjer}
+
+O processo é semelhante ao teste de Breusch-Pagan. No R:
+
+```{r}
+#| label: glesjer
+
+# Calcular |u_i|
+hprice1$u_i_abs <- abs(hprice1$u_i)
+
+# Estimar reg-glesjer
+reg_glesjer <- lm(u_i_abs ~ lotsize + sqrft + bdrms, 
+                  data = hprice1)
+
+# Obter R2
+r2_glesjer <- summary(reg_glesjer)$r.squared
+
+# Obter n
+n <- nrow(hprice1)
+
+# Número de variáveis independentes - k
+k <- reg_glesjer$rank - 1
+
+# LM stat
+LM_stat_glesjer <- n * r2_glesjer
+
+# Obter valor P
+library(lmtest)
+p_value_glesjer <- 1 - pchisq(LM_stat_glesjer, 
+                        df = k)
+p_value_glesjer
+```
+
+O mesmo resultado pode ser obtido utilizando a função `gl()` da biblioteca `skedastic`. A hipótese nula é rejeitada para qualquer nível de significância estatística.
+
+##### Teste de Harvey-Godfrey
+
+O teste Harvey-Godfrey [@harvey_estimating_1976, @godfrey_testing_1978] tem como regressão auxiliar:
+
+$$
+ln(\mu_i^2) = \delta_0 + \delta_1 lotsize_i + \delta_2 sqrft_i + \delta_3 bdrms_i + \sigma_i
+$$ {#eq-harvey-godfrey}
+
+O processo é semelhante a qualquer LM teste para heterocedasticidade. Tabém pode ser obtido utilizando a função `harvey_godfrey()` da biblioteca `skedastic`:
+
+```{r}
+#| label: harvey-godfrey
+harvey(modelo_0)
+```
+
+Neste caso a hipótese nula é rejeitada para 5% e 10% de significância estatística.
+
+#### Teste de Park
+
+O teste de Park [@park_estimation_1966] tem como regressão auxiliar:
+
+$$
+ln(\mu_i^2) = \delta_0 + \delta_1 ln(lotsize_i) + \delta_2 ln(sqrft_i) + \delta_3 ln(bdrms_i) + \sigma_i
+$$ {#eq-park}
+
+A bibliotca `skedastic` não tem o teste de Park. Este é um dos exemplos em que temos que fazer o processo passo a passo:
+
+```{r}
+#| label: park
+
+# Calcular ln(u_i^2)
+hprice1$ln_u_i2 <- log(hprice1$u_i^2)
+
+# Estimar regressão auxiliar
+reg_park <- lm(ln_u_i2 ~ log(lotsize) + log(sqrft) + log(bdrms),
+                data = hprice1)
+
+# Obter R2
+r2_park <- summary(reg_park)$r.squared
+
+# Obter n
+n <- nrow(hprice1)
+
+# Número de variáveis independentes - k
+k <- reg_park$rank - 1
+
+# LM stat
+LM_stat_park <- n * r2_park
+
+# Obter valor P
+library(lmtest)
+p_value_park <- 1 - pchisq(LM_stat_park, df = k)
+p_value_park
+```
+
+A hipótese nula de homocedasticidade não é rejeitada para nenhum nível de significância estatística.
+
+#### Teste de White
+
+O teste de White [@white_heteroskedasticity-consistent_1980] é um teste geral para heterocedasticidade que não assume uma forma específica de heterocedasticidade. A regressão auxiliar do teste de White inclui as variáveis independentes e os termos quadráticos:
+
+$$
+\begin{split}
+{\mu_i}^2 = \delta_0 & + \delta_1 lotsize_i + \delta_2 sqrft_i + \delta_3 bdrms_i \\
+&+ \delta_4 lotsize_i^2 + \delta_5 sqrft_i^2 + \delta_6 bdrms_i^2 + \sigma_i
+\end{split}
+$$ {#eq-white}
+
+e pode incluir também interações entre as variáveis independentes :
+
+$$
+\begin{split}
+{\mu_i}^2 = \delta_0 &+ \delta_1 lotsize_i + \delta_2 sqrft_i + \delta_3 bdrms_i \\
+&+ \delta_4 lotsize_i^2 + \delta_5 sqrft_i^2 + \delta_6 bdrms_i^2 \\
+&+ \delta_7 (lotsize_i \cdot sqrft_i) + \delta_8 (lotsize_i \cdot bdrms_i) \\
+&+ \delta_9 (sqrft_i \cdot bdrms_i) + \sigma_i
+\end{split}
+$$ {#eq-white-cross}
+
+Para a @eq-white podemos utilizar a função `white()` da biblioteca `skedastic`:
+
+```{r}
+#| label: white
+white(modelo_0)
+```
+
+e para a @eq-white-cross podemos utilizar a função `white()` com o argumento `interactions = TRUE`:
+
+```{r}
+#| label: white-cross
+white(modelo_0, interactions = TRUE)
+```
+
+Para qualquer uma das variações do teste, a hipótese nula é rejeitada para todos os níveis de significância estatística.
+
+#### Teste de ARCH
+
+O teste de ARCH [@engle_autoregressive_1982] pode ser utilizado para detectar a presença de heterocedasticidade condicional, especialmente em séries temporais. A regressão auxiliar do teste de ARCH é dada por:
+
+Para este exemplo vamo utilizar os dados do ficheiro `m_reg.xlsx`.
+
+```{r}
+#| label: load_data-m_reg_2
+library(readxl)
+m_reg <- read_excel("m_reg.xlsx")
+```
+
+Estimar o modelo de regressão:
+
+```{r}
+#| label: regressao
+modelo_0 <- lm(gdp ~ ind + ser + agri + man, data = m_reg)
+```
+
+Para executar o teste de ARCH utilizado a função `ArchTest()` da biblioteca `FinTS`:
+
+```{r}
+#| label: arch
+library(FinTS)
+teste_arch <- ArchTest(residuals(modelo_0), lags = 1)
+teste_arch
+```
+
+O argumento `lags` especifica o número de defasamentos do teste, ou seja, a ordem do modelo ARCH a ser testada. Para a ordem 1, existe heterocedasticidade para qualquer nível de significância estatística (valor P \< 0.01). Em que a hipótese nula do teste é: não existem efeitos ARCH para a ordem 1.
+
+#### outros testes
+
+A biblioteca `skedastic` oferece uma variedade de outros testes para heterocedasticidade, para mais testes:
+
+```{r}
+#| label: outros_testes
+library(skedastic)
+ls("package:skedastic")
+```
+
+A biblioteca `performance` oferece funções para avaliar o desempenho de modelos de regressão, incluindo testes de heterocedasticidade, como a `check_heteroscedasticity()`:
+
+```{r}
+#| label: check_heteroscedasticity
+library(performance)
+check_heteroscedasticity(modelo_0)
+```
+
+Esta função realiza o teste de Breusch-Pagan LM e fornece até uma resposta visual.
+
+## Diagnóstico da Autocorrelação dos erros
+
+Nesta aplicação vamos utilizar os dados do exemplos anterior (ficheiro `m_reg.xlsx`) e estimar o modelo:
+
+```{r}
+#| label: load_data-m_reg5
+#| output: false
+#carregar bibliotecas
+library(readxl)
+library(tidyverse)
+library(performance)
+
+#carregar dados
+m_reg <- read_excel("m_reg.xlsx")
+
+#estimar modelo
+modelo <- lm(gdp ~ ind + ser + agri + man, data = m_reg)
+```
+
+### Gráfico
+
+A forma informal de detetar a heterocedaticide é através de um gráfico de dispersão dos resíduos e dos resíduos desfasados do modelo. Para isso é necessário o obter os resíduos (`u_t`) do `modelo` e os resíduos desfasados (`u_t1`). No `R`:
+
+```{r}
+#| label: residuos
+m_reg <- m_reg |> 
+          mutate(
+            u_t = residuals(modelo), 
+            u_t1 = lag(u_t))
+```
+
+Gráfico de dispersão dos resíduos com `ggplot()`:
+
+```{r}
+#| label: grafico_residuos
+library(ggplot2)
+
+#| label: grafico_residuos_autocorr
+ggplot(m_reg, aes(x = u_t1, y = u_t)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 5) +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(title = "Gráfico de Dispersão dos Resíduos vs Resíduos Desfasados",
+       x = "Resíduos Desfasados (u_t-1)",
+       y = "Resíduos (u_t)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+```
+
+Através do gráfico podemos que existe autocorrelação nos resíduos.
+
+### Teste de Durbin-Watson
+
+O teste de Durbin-Watson (DW) [@durbin_testing_1950; @durbin_testing_1951] pode ser utilizado para detectar a presença de autocorrelação nos resíduos de um modelo de regressão. O teste tem os seguintes pressupostos:
+
+1.  O modelo tem constante
+2.  Autocorrelação de 1ª ordem
+3.  Não existe variável dependente desfasada com independente
+
+O passo a passo para executar o teste de Durbin-Watson é o seguinte:
+
+1.  Estimar o modelo e obter os resíduos.
+2.  Calcular a estatística de DW
+
+$$
+DW_{stat} = \frac{\sum_{t=2}^{n} (u_t - u_{t-1})^2}{\sum_{t=1}^{n} u_t^2}
+$$ {#eq-dw}
+
+No R:
+
+```{r}
+#| label: durbin_watson
+# Calcular numerador: soma de (u_t - u_{t-1})^2
+numerador <- sum((m_reg$u_t[-1] - m_reg$u_t[-nrow(m_reg)])^2, na.rm = TRUE)
+
+# Calcular denominador: soma de u_t^2
+denominador <- sum(m_reg$u_t^2, na.rm = TRUE)
+
+# Calcular estatística DW
+DW_stat <- numerador / denominador
+DW_stat
+```
+
+O valor de $DW_{stat}$ pode também ser obtido através da função `dwtest()` da biblioteca `lmtest`:
+
+```{r}
+#|label: dw_test
+library(lmtest)
+dwtest(modelo)
+```
+
+
+3.  Construir a tabela com o $DW_{stat}$:
+
+```{r}
+#| label: grafico-durbin-watson
+#| echo: false
+#| fig-width: 10
+#| fig-height: 1.5
+
+library(ggplot2)
+
+# Definir as 5 zonas com distâncias iguais
+zona_1 <- 0.8   # largura de cada zona
+d_L <- zona_1
+d_U <- 2 * zona_1
+centro <- 2     # centro do gráfico
+quatro_menos_d_U <- 4 - d_U
+quatro_menos_d_L <- 4 - d_L
+
+# Criar data frame para as regiões com distâncias iguais
+regioes <- data.frame(
+  xmin = c(0, d_L, d_U, quatro_menos_d_U, quatro_menos_d_L),
+  xmax = c(d_L, d_U, quatro_menos_d_U, quatro_menos_d_L, 4),
+  ymin = rep(0, 5),
+  ymax = rep(0.2, 10),  # Reduzida de 0.6 para 0.4
+  regiao = c("Autocorrelação\nPositiva", "Zona de\nindecisão", "Sem\nautocorrelação", 
+             "Zona de\nindecisão", "Autocorrelação\nNegativa"),
+  cor = c("#ff3333", "#ffdd00", "#00cc44", "#ffdd00", "#3366ff")
+)
+
+# Criar o gráfico
+ggplot() +
+  # Adicionar as regiões coloridas (sem bordas)
+  geom_rect(data = regioes, 
+            aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = regiao),
+            alpha = 0.8, color = NA) +
+  
+  # Adicionar rótulos dos pontos críticos
+  annotate("text", x = 0.1, y = -0.1, label = "0",   # Ajustado para nova altura
+           size = 4.5, fontface = "bold") +
+  annotate("text", x = d_L, y = -0.1, label = "d_I", 
+           size = 4.5, fontface = "bold") +
+  annotate("text", x = d_U, y = -0.1, label = "d_S", 
+           size = 4.5, fontface = "bold") +
+  annotate("text", x = 2, y = -0.1, label = "2", 
+           size = 4.5, fontface = "bold") +
+  annotate("text", x = quatro_menos_d_U, y = -0.1, label = "4-d_S", 
+           size = 4.5, fontface = "bold") +
+  annotate("text", x = quatro_menos_d_L, y = -0.1, label = "4-d_I", 
+           size = 4.5, fontface = "bold") +
+  annotate("text", x = 3.9, y = -0.1, label = "4",   # Ajustado para nova altura
+           size = 4.5, fontface = "bold") +
+  
+  # Adicionar rótulos das regiões
+  geom_text(data = regioes, 
+            aes(x = (xmin + xmax)/2, y = 0.1, label = regiao),  # Ajustado para nova altura
+            size = 4, fontface = "bold", color = "black") +
+  
+  # Configurações dos eixos e tema
+  scale_fill_manual(values = c("Autocorrelação\nPositiva" = "#ff3333",      # Vermelho vivo
+                              "Zona de\nindecisão" = "#ffdd00",  # Amarelo vivo
+                              "Sem\nautocorrelação" = "#00cc44",  # Verde vivo
+                              "Autocorrelação\nNegativa" = "#3366ff")) +         # Azul vivo
+  scale_x_continuous(limits = c(0, 4), breaks = c(0, 0.8, 1.6, 2, 2.4, 3.2, 4),
+                     expand = expansion(mult = c(0, 0), add = c(0, 0))) +
+  scale_y_continuous(limits = c(-0.15, 0.2)) +  # Ajustado para nova altura
+  labs(x = "",
+       y = "") +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    panel.grid = element_blank()
+  )
+  
+```
+
+Onde:
+
+-   $d_I$ é a distância de Durbin-Watson inferior
+
+-   $d_S$ é a distância de Durbin-Watson superior.
+
+Os limites para cada nível de significância podem ser obtidas em: [Durbin-Watson Significance Tables](https://www3.nd.edu/%7ewevans1/econ30331/Durbin_Watson_tables.pdf)
+
+Em alternativa, é possivel calcular o $DW_stat$ e obter diretamente o valor da probabilidade com a função `dwtest()` da biblioteca `lmtest`:
+
+```{r}
+#|label: dw_test
+library(lmtest)
+dwtest(modelo)
+```
+
+4.  Concluir (a hipótese nula é que não existe autocorrelação)
+
+A hipótese nula do teste de DW é que não existe autocorrelação. Considerando o valor da probabilidade, a Hipótese nula é rejeitada para qualquer nível de significância estatística. 
+
+A biblioteca `performance` também tem a função `check_autocorrelation()` que pode ser utilizada para testar a autocorrelação dos resíduos:
+
+```{r}
+#|label: performance_check_autocorrelation
+library(performance)
+check_autocorrelation(modelo)
+```
+
+
+O teste DW tem algumas limitações, já mencionadas nos pressupostos. Tem ainda também a limitação de o $DW_stat$ ficar nas zonas de indecisão e com isto não ser conclusivo. Existe também o teste Durbin h-H (DH) que é uma extensão do teste DW e que pode ser utilizado quando a variável dependente é defasada. O teste DH não é tão utilizado como o DW.
+
+### Teste de Breusch-Godfrey
+
+O teste de Breusch-Godfrey [@breusch_auto_1978; @godfrey_testing_1978] tem vantagem de poder ser utilizado para detetar autocorrelação de ordens superiores a 1. O teste tem como base a equação:
+
+
+$$
+\begin{split}
+gdp_t = \beta_0 & + \beta_1 inf_t + \beta_2 ser_t+ \beta_3 agri_t + \beta_4 man_t + \mu_t
+\end{split}
+$$ {#eq-breusch_godfrey}
+
+onde:
+
+$$
+\mu_t = \rho_1 \mu_{t-1} + \rho_2 \mu_{t-2} + ... + \rho_p \mu_{t-p} + \epsilon_t
+$$ {#eq-breusch_godfrey_residuals}
+
+onde $p$ é a ordem de autocorrelação a ser testada.
+
+Portanto, a H0: $\rho_1 = rho_2 = ... = rho_p = 0$ (não existe autocorrelação) Enquanto que a H1: pelo menos um $\rho_i \neq 0$ (existe autocorrelação). O teste é feito com o modelo LM (ou seja @eq-breusch_godfrey e a @eq-breusch_godfrey_residuals) em que o $LM_{stat} = (n-\rho)R^2$ e o valor de P é obtido através da distribuição $\chi^2$. O teste pode ser calculado de forma conveniente com a função `bgtest`():
+
+```{r}
+#|label: bg_test
+library(lmtest)
+
+#odem 1
+bgtest(modelo)
+
+#ordem 2
+bgtest(modelo, order = 2, type = "Chisq")
+```
+
+O primeiro argumento da função é objeto do modelo. Existem mais alguns argumentos que são necessários `order` (a ordem da autocorrelação a ser testada) e `type` (o tipo de teste a ser realizado, como `Chisq` ou `F`). Por defeito, o argumento `order` é 1 e o argumento `type` é `Chisq`. A hipótese nula é rejeitada para qualquer nível de significância estatística.
+
+Segundo o resultado do teste, a hipótese nula não foi rejeitada, o que indique que não existe autocorrelação de ordem 1 nem ordem 2.
+
+## Diagnóstico da Normalidade {#sec-normalidade}
+
+Tal como os diagnósticos anteriores, este também pode ser feito através de gráficos e de testes estatísticos. Para esta aplicação vamos utilizar o modelo anterior.
+
+```{r}
+#| label: load_data-m_reg6
+#| output: false
+#carregar bibliotecas
+library(readxl)
+library(tidyverse)
+library(performance)
+
+#carregar dados
+m_reg <- read_excel("m_reg.xlsx")
+
+#estimar modelo
+modelo <- lm(gdp ~ ind + ser + agri + man, data = m_reg)
+
+#obter erro
+m_reg$residuos <- residuals(modelo)
+
+```
+
+### Histograma
+
+Para o gráfico de histograma dos resíduos e comparar com a linha de normalidade:
+
+```{r}
+#| label: histograma_residuos
+library(ggplot2)
+
+ggplot(m_reg, aes(x = residuos)) +
+  geom_histogram(aes(y = after_stat(density)),
+                bins = 30, fill = "steelblue", 
+                color = "black", alpha = 0.7) +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(m_reg$residuos), 
+                           sd = sd(m_reg$residuos)), 
+                color = "red", size = 1.2) +
+  labs(title = "Histograma dos Resíduos com Curva Normal", 
+       x = "Resíduos", 
+       y = "Densidade") +
+  theme_minimal()
+```
+
+Utilizando exclusivamente a biblioteca o histograma dos resíduos podemos concluir que aparentemente os resíduos seguem uma distribuição normal. É perfeitamente normal em amostras pequenas haver desvios (barras) em relação à distribuição normal (linha vermelha)
+
+### Teste de Shapiro-Wilk
+
+O teste de @shapiro_analysis_1965 (SW) é um dos testes mais utilizados para testar a normalidade dos resíduos. A hipótese nula é que os resíduos seguem uma distribuição normal. O teste pode ser realizado com a função `shapiro.test()`:
+
+```{r}
+#| label: shapiro_test
+shapiro.test(m_reg$residuos)
+```
+
+A H0 não é rejeitada para qualquer nível de significância estatística. O `W` é a estatística do teste. O teste SW tem um grande poder estatístico em detetar desvios em relação à normalidade, pois é muit sensível a desvios tanto no centro como nas caudas da distribuição.
+
+A função `check_normality()` da biblioteca `performance` tabém realizado o teste SW:
+
+```{r}
+#| label: check_normality
+
+library(performance)
+
+check_normality(modelo)
+```
+
+### Teste de Jarque Bera
+
+O teste de @jarque_test_1987 (JB) é outro teste muito utilizado para verificar a normalidade dos resíduos. A hipótese nula é a mesma do teste SW. O teste pode ser realizado com a função `jarque.test()` da biblioteca `moments`.
+
+```{r}
+#| label: jarque_bera_test
+
+#carregar biblioteca
+library(moments)
+
+#teste de normalidade
+jarque.test(m_reg$residuos)
+```
+
+Como H0 não é rejeitada, os erros seguem uma distribuição normal. Se H0 for rejeitada podemo obter os valores de curtose e assimetria para perceberem a razão dos resíduos não seguirem uma distribuição normal:
+
+```{r}
+#| label: kurtosis_skewness
+
+#Kurtosis (achatamento)
+kurtosis(m_reg$residuos)
+
+#Skewnedd (assimetria)
+skewness(m_reg$residuos)
+```
+
+
+## Testes de Especificação e Estabilidade {#sec-especificacao}
+
+### Avaliar a Especificação 
+A especificação de um modelo de regressão está relacionada com a inclusão de variáveis (Overfitting) que não são relevantes e a exclusão de variáveis relevantes (Underfitting).
+
+A não inclusão de variáveis relevantes pode levar a um modelo mal especificado, em que o valor esperado do resíduos $E[\mu_i|X_i] \neq 0$, o que faz com que essa variável (omitida) seja confundida com o erro. Já a inclusão de variáveis irrelevantes pode levar a um modelo com excesso de ajustamento, em que o valor esperado do resíduos $E[\mu_i|X_i] = 0$, mas a inclusão de variáveis desnecessárias (com informação redundante) pode aumentar a variância dos estimadores.
+
+Para este exemplo vamos utilizar os dados `wage2` da biblioteca `wooldridge`:
+
+```{r}
+#| label: load_data_w_2
+#| eval: false
+library(wooldridge)
+data("wage2")
+```
+
+Para ver a definição das variáveis executar `?wage2`.
+
+Vamos estimar o seguinte modelo:
+$$
+wage_i = \beta_0 + \beta_1 educ_i + \beta_2 exper_i + \beta_3 tenure_i + \mu_i
+$$ {#eq-modelo-completo}
+
+e o modelo sem a variável `tenure`:
+
+$$
+wage_i = \beta_0 + \beta_1 educ_i + \beta_2 exper_i + \mu_i
+$$ {#eq-modelo-restrito}
+
+No R:
+
+```{r}
+#| label: model_spec
+modelo_completo <- lm(wage ~ educ + exper + tenure, data = wage2)
+modelo_restrito <- lm(wage ~ educ + exper, data = wage2)
+
+#comparar os modelos
+library(stargazer)
+stargazer::stargazer(modelo_completo, modelo_restrito, type = "text")
+```
+
+Ao comparar os dois modelos podemos ver que sinais dos coeficinets são consistentes e os valores muito semelhantes. A variável `exper` representa os anos de experiência profissional e a variável `tenure` representa os anos na empresa. Será que estas variáveis contém a mesma informação? Pos os anos de `exper` podem estar contabilizados nos anos de `tenure`. Para testar vamos utilizar a função `waldtest` da biblioteca `lmtest`:
+
+```{r}
+#| label: wald_test
+library(lmtest)
+waldtest(modelo_restrito, modelo_completo)
+```
+
+Para este caso, estamos a testar se a variável `tenure` pode ser omitida do modelo. E concluímos que a variável `tenure` é necessária, ou seja, a informação da variável vai para além da informação do nº de anos de experiência. Está acapturar efeitos como a lealdade do funcionário à empresa, aumento da produtividade ao longo do tempo, entre outros fatores. A variável `exper` representa apenas a experiência profissional (pode ser numa profissão totalmente diferente). O que nos pode levar a pensar que o modelo está mal especificado se omitirmos a variável `tenure`. Este resultado també nos pode fazer pensar se a variável `exper` é mesmo necessário, para despistar vamos fazer um modelo omitindo a variável `exper` e realziar o teste:
+
+```{r}
+#| label: model_spec2
+modelo_completo2 <- lm(wage ~ educ + exper + tenure, data = wage2)
+modelo_restrito2 <- lm(wage ~ educ + tenure, data = wage2)
+
+#comparar os modelos
+library(stargazer)
+stargazer::stargazer(modelo_completo2, modelo_restrito2, type = "text")
+
+waldtest(modelo_restrito2, modelo_completo2)
+```
+
+Concluímos que a variável `exper` também é necessária no modelo.
+
+ E está também relacionada com a forma funcional do modelo. Algumas formas funcionais são:
+
+-   **Linear**
+
+```{r}
+#| label: forma-funcional-linear
+#| echo: false
+# Gerar dados para a forma funcional linear
+set.seed(123)
+n <- 100
+x <- runif(n, min = 0, max = 20)
+y <- 2 + 3 * x + rnorm(n, mean = 0, sd = 2)
+
+# Criar data frame
+dados_linear <- data.frame(x = x, y = y)
+
+# Estimar modelo linear
+modelo_linear <- lm(y ~ x, data = dados_linear)
+
+# Gráfico com ggplot2
+library(ggplot2)
+
+ggplot(dados_linear, aes(x = x, y = y)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 5) +
+  geom_smooth(method = "lm", se = TRUE, color = "red", alpha = 0.2) +
+  labs(title = "Forma Funcional Linear",
+       x = "Variável Independente (x)",
+       y = "Variável Dependente (y)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray50"),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+```
+
+$$
+y_i=\beta_0+\beta_1x_{i}+\mu_i
+$$ {#eq-linear}
+
+$\beta_0$: representa o valor esperado de $y_i$ quando $x_i=0$
+
+$\beta_1$: um aumento de uma unidade em $x_i$ está associado a um aumento de $\beta_1$ unidades em $y_i$, *ceteris paribus*.
+
+-   **Linear - logarítmica**
+
+```{r}
+#| label: forma-funcional-linear-log
+#| echo: false
+
+# Gerar dados para a forma funcional linear-logarítmica
+set.seed(123)
+n <- 100
+x <- runif(n, min = 1, max = 100)  # x deve ser maior que 0 para log
+y <- 5 + 10 * log(x) + rnorm(n, mean = 0, sd = 2)
+# Criar data frame
+dados_linear_log <- data.frame(x = x, y = y)
+# Estimar modelo linear-logarítmico
+modelo_linear_log <- lm(y ~ log(x), data = dados_linear_log)
+# Gráfico com ggplot2
+library(ggplot2)
+ggplot(dados_linear_log, aes(x = x, y = y)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 5.5) +
+  geom_smooth(method = "lm", formula = y ~ log(x), se = TRUE, color = "red", alpha = 0.2) +
+  labs(title = "Forma Funcional Linear-Logarítmica",
+       x = "Variável Independente (x)",
+       y = "Variável Dependente (y)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray50"),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+
+```
+
+$$
+y_i=\beta_0+\beta_1\ln(x_{i})+\mu_i
+$$ {#eq-linear-log}
+
+$\beta_0$: representa o valor esperado de $y_i$ quando $ln(x_i)=0$ (ou seja, $x_i=1$)
+
+$\beta_1$: um aumento de 1% em $x_i$ está associado a um aumento de $\frac{\beta_1}{100}$ unidades em $y_i$, *ceteris paribus*.
+
+-   **Logarítmica - linear**
+
+```{r}
+#| label: forma-funcional-log-linear
+#| echo: false
+
+# Gerar dados para a forma funcional logarítmica-linear
+set.seed(123)
+n <- 100
+x <- runif(n, min = 0, max = 20)
+y <- exp(1 + 0.1 * x + rnorm(n, mean = 0, sd = 0.1))  # y deve ser maior que 0 para log
+# Criar data frame
+dados_log_linear <- data.frame(x = x, y = y)
+# Estimar modelo logarítmico-linear
+modelo_log_linear <- lm(log(y) ~ x, data = dados_log_linear)
+# Gráfico com ggplot2
+library(ggplot2)
+ggplot(dados_log_linear, aes(x = x, y = y)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 5.5) +
+  geom_line(data = data.frame(x = seq(min(x), max(x), length.out = 100), 
+                              y = exp(predict(modelo_log_linear, 
+                                              newdata = data.frame(x = seq(min(x), max(x), length.out = 100))))), 
+            aes(x = x, y = y), color = "red", size = 1.2) + # Plota a linha corrigida
+  labs(title = "Forma Funcional Logarítmica-Linear",
+       x = "Variável Independente (x)",
+       y = "Variável Dependente (y)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray50"),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+
+```
+
+
+
+$$
+\ln(y_i)=\beta_0+\beta_1x_{i}+\mu_i
+$$ {#eq-log-linear}
+
+$\beta_0$: representa o valor esperado de $ln(y_i)$ quando $x_i=0$, para obter em ralação a $y = e^{\beta_0}$, no `R`: `exp(coef(modelo))["(Intercept)"]`.
+
+$\beta_1$: um aumento de uma unidade em $x_i$ está associado a um aumento de $\beta_1 \cdot 100$ % em $y_i$, *ceteris paribus*.
+
+-   **Logarítmica - logarítmica**
+
+```{r}
+#| label: forma-funcional-log-log
+#| echo: false
+# Gerar dados para a forma funcional logarítmica-logarítmica
+set.seed(123)
+n <- 100
+x <- runif(n, min = 1, max = 100)  # x deve ser maior que 0 para log
+y <- exp(1 + 0.5 * log(x) + rnorm(n, mean = 0, sd = 0.1))  # y deve ser maior que 0 para log
+# Criar data frame
+dados_log_log <- data.frame(x = x, y = y)
+# Estimar modelo logarítmico-logarítmico
+modelo_log_log <- lm(log(y) ~ log(x), data = dados_log_log)
+
+# Criar um novo data frame para a linha de previsão
+x_previsao <- data.frame(x = seq(min(x), max(x), length.out = 100))
+# Prever valores de y na escala original (transformação inversa)
+y_previsao <- exp(predict(modelo_log_log, newdata = x_previsao))
+
+# Gráfico com ggplot2
+library(ggplot2)
+
+ggplot(dados_log_log, aes(x = x, y = y)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 5.5) +
+  geom_line(data = data.frame(x = x_previsao$x, y = y_previsao), 
+            aes(x = x, y = y), color = "red", size = 1.2) + # Plota a linha corrigida
+  labs(title = "Forma Funcional Logarítmica-Logarítmica",
+       x = "Variável Independente (x)",
+       y = "Variável Dependente (y)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray50"),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+```
+
+
+$$
+\ln(y_i)=\beta_0+\beta_1\ln(x_{i})+\mu_i
+$$ {#eq-log-log}
+
+$\beta_1$: um aumento de 1% em $x_i$ está associado a um aumento de $\beta_1$ % em $y_i$, *ceteris paribus*.
+
+-   **Exponencial**
+
+```{r}
+#| label: forma-funcional-exponencial
+#| echo: false
+
+# Gerar dados para a forma exponencial
+set.seed(123)
+n <- 100
+x <- runif(n, min = 0, max = 10)
+y <- 2 * exp(0.3 * x) + rnorm(n, mean = 0, sd = 2)  # y deve ser maior que 0 para log
+y <- pmax(y, 0.1) # Garantir que y seja positivo para a transformação logarítmica
+# Criar data frame
+dados_exponencial <- data.frame(x = x, y = y)
+# Estimar modelo exponencial
+modelo_exponencial <- lm(log(y) ~ x, data = dados_exponencial)
+# Criar um novo data frame para a linha de previsão
+x_previsao <- data.frame(x = seq(min(x), max(x), length.out = 100))
+# Prever valores de y na escala original (aplicando a transformação inversa)
+y_previsao <- exp(predict(modelo_exponencial, newdata = x_previsao))
+# Gráfico com ggplot2
+library(ggplot2)
+ggplot(dados_exponencial, aes(x = x, y = y)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 5.5) +
+  geom_line(data = data.frame(x = x_previsao$x, y = y_previsao), 
+            aes(x = x, y = y), color = "red", size = 1.2) + # Plota a linha corrigida
+  labs(title = "Forma Funcional Exponencial",
+       x = "Variável Independente (x)",
+       y = "Variável Dependente (y)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray50"),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+```
+
+$$
+y_i=\beta_0\beta_1^{x_i}\mu_i
+$$
+
+com LN's podemos linearizar a equação exponencial:
+
+$$
+\ln(y_i)=\ln(\beta_0)+\ln(\beta_1).x_i+\ln(\mu_i)
+$$
+
+e estimar:
+
+$$
+\ln(y_i)=\beta'_0+\beta'_1x_i+\mu'_i
+$$
+
+-   **Potência**
+
+```{r}
+#| label: forma-funcional-potencia
+#| echo: false
+
+# Gerar dados para uma função polinomial de grau 2
+set.seed(456)
+n <- 100
+x <- runif(n, min = 0, max = 10)
+y <- 0.5 * x^2 + rnorm(n, mean = 0, sd = 2) 
+# Substituir y por 0.5 * x^2 + rnorm(n, mean = 0, sd = 5) se precisar de mais variabilidade
+y <- pmax(y, 0.1) # Garantir que y seja positivo para a transformação logarítmica
+
+# Criar data frame
+dados_potencia <- data.frame(x = x, y = y)
+
+# Estimar o modelo de regressão log-log
+modelo_potencia <- lm(log(y) ~ log(x), data = dados_potencia)
+
+# Criar um novo data frame para a linha de previsão
+x_previsao <- data.frame(x = seq(min(x), max(x), length.out = 100))
+# Prever valores de y na escala original (aplicando a transformação inversa)
+y_previsao <- exp(predict(modelo_potencia, newdata = x_previsao))
+
+# Gráfico com ggplot2
+library(ggplot2)
+
+ggplot(dados_potencia, aes(x = x, y = y)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 5.5) +
+  geom_line(data = data.frame(x = x_previsao$x, y = y_previsao), 
+            aes(x = x, y = y), color = "red", size = 1.2) + # Plota a linha corrigida
+  labs(title = "Forma Funcional de Potência (Ordem 2)",
+       x = "Variável Independente (x)",
+       y = "Variável Dependente (y)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray50"),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+```
+
+
+$$
+y_i=\beta_0X_i^{\beta_1}\mu_i
+$$ {#eq-potencia}
+
+Com LN's:
+
+$$
+ln(y_i)=ln(\beta_0)+\beta_1.ln(x_i)+ln(\mu_i)
+$$  {#eq-potencia2}
+
+para estimar:
+$$
+ln(y_i)=\beta'_0+\beta_1 ln(x_i)+\mu'_i
+$$ {#eq-potencia3}
+
+-   **Polinomial**
+
+```{r}
+#| label: forma-funcional-polinomio
+#| echo: false
+
+# Gerar dados para uma função polinomial de grau 2
+set.seed(101)
+n <- 100
+x <- runif(n, min = -10, max = 10)
+y <- 5 + 0.5 * x + 0.2 * x^2 + rnorm(n, mean = 0, sd = 5)
+
+# Criar data frame
+dados_polinomio <- data.frame(x = x, y = y)
+
+# Estimar o modelo de regressão polinomial de grau 2
+modelo_polinomio <- lm(y ~ x + I(x^2), data = dados_polinomio)
+
+# Criar um novo data frame para a linha de previsão
+x_previsao <- data.frame(x = seq(min(x), max(x), length.out = 100))
+# Prever valores de y com base no modelo
+y_previsao <- predict(modelo_polinomio, newdata = x_previsao)
+
+# Gráfico com ggplot2
+library(ggplot2)
+
+ggplot(dados_polinomio, aes(x = x, y = y)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 5.5) +
+  geom_line(data = data.frame(x = x_previsao$x, y = y_previsao), 
+            aes(x = x, y = y), color = "red", size = 1.2) +
+  labs(title = "Regressão Polinomial de Grau 2",
+       subtitle = paste0("y = ", round(coef(modelo_polinomio)[1], 2), " + ", 
+                         round(coef(modelo_polinomio)[2], 2), "x + ", 
+                         round(coef(modelo_polinomio)[3], 2), "x^2"),
+       x = "Variável Independente (x)",
+       y = "Variável Dependente (y)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray50"),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+```
+
+$$
+y_i=\beta_0+\beta_1x_i+\beta_2x_i^{2}+\mu_i
+$$ {#eq-polinomial}
+
+para estimar:
+
+$$
+z_i=x'_i=x_i^2
+$$  {#eq-polinomial2}
+
+-   **Hiperbólica**
+
+```{r}
+#| label: forma-funcional-hiperbolica
+#| echo: false
+
+# Gerar dados para a forma funcional hiperbolica
+set.seed(123)
+n <- 100
+x <- runif(n, min = 1, max = 20)  # x deve ser maior que 0 para evitar divisão por zero
+y <- 10 + 5 * (1 / x) + rnorm(n, mean = 0, sd = 1)
+# Criar data frame
+dados_hiperbolica <- data.frame(x = x, y = y)
+# Estimar modelo hiperbolico
+modelo_hiperbolica <- lm(y ~ I(1 / x), data = dados_hiperbolica)
+# Gráfico com ggplot2
+library(ggplot2)
+ggplot(dados_hiperbolica, aes(x = x, y = y)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 5.5) +
+  geom_smooth(method = "lm", formula = y ~ I(1 / x), se = TRUE, color = "red", alpha = 0.2) +
+  labs(title = "Forma Funcional Hiperbólica",
+       x = "Variável Independente (x)",
+       y = "Variável Dependente (y)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray50"),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+```
+
+$$
+y_i=\beta_0+\beta_1\frac{1}x_i+\mu_i
+$$ {#eq-hiperbolica}
+
+para estimar:
+
+$$
+w_i=x'_i=\frac{1}x_i
+$$ {#eq-hiperbolica2}
+
+Depois de linearizar, a interpretação da forma funcional é semelhante às lineares.
+
+### Teste de Ramsey RESET
+
+O teste de Ramsey RESET [@ramsey_tests_1969] é utilizado para testar a especificação do modelo, nomeadamente se a forma funcional está correta. Para evitar que:
+
+```{r}
+#| label: ma-especificação
+#| echo: false
+
+# Gerar dados para a forma funcional de potência (ordem 3)
+set.seed(789)
+n <- 100
+x <- runif(n, min = 0, max = 5)
+y <- 0.2 * x^3 + rnorm(n, mean = 0, sd = 1.5)
+y <- pmax(y, 0.1) # Garantir que y seja positivo para a transformação logarítmica
+
+# Criar data frame
+dados_potencia3 <- data.frame(x = x, y = y)
+# Estimar o modelo de regressão log-log
+modelo_potencia3 <- lm(log(y) ~ log(x), data = dados_potencia3)
+# Criar um novo data frame para a linha de previsão
+x_previsao <- data.frame(x = seq(min(x), max(x), length.out = 100))
+# Prever valores de y na escala original (aplicando a transformação inversa)
+y_previsao <- exp(predict(modelo_potencia3, newdata = x_previsao))
+# Gráfico com ggplot2
+library(ggplot2)
+ggplot(dados_potencia3, aes(x = x, y = y)) +
+  geom_point(alpha = 0.7, color = "steelblue", size = 5.5) +
+  geom_line(data = data.frame(x = x_previsao$x, y = y_previsao), 
+            aes(x = x, y = y), color = "red", size = 1.2) +
+  labs(title = "Má Especificação do Modelo",
+       x = "Variável Independente (x)",
+       y = "Variável Dependente (y)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray50"),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank())
+```
+
+O teste consiste em:
+
+1. Estimar o modelo e obter os valores previstos (`wage_hat`).
+2. Incluir termos polinomiais das variáveis independentes e reestimar o modelo com os termos (`wage_hat^2`, `wage_hat^3`, ...).
+3. Realizar o teste F para verificar se os coeficientes dos termos polinomiais são conjuntamente significativos.
+
+No R:
+
+```{r}
+#| label: ramsey_reset_manual
+
+#estimar modelo
+modelo <- lm(wage ~ educ + exper + tenure, data = wage2)
+
+#obter valores previstos e y^ e y^3
+ wage2 <- wage2 |> 
+            mutate(
+              wage_hat = predict(modelo),
+              wage_hat2 = wage_hat^2,
+              wage_hat3 = wage_hat^3
+            )
+
+modelo_reset <- lm(wage ~ educ + exper + tenure +
+              wage_hat2 + wage_hat3, data = wage2)
+
+#teste
+waldtest(modelo, modelo_reset)
+
+#ou diretamente
+resettest(modelo, power = 2:3)
+```
+
+O argumento `power` do teste de Ramsey RESET especifica os graus de liberdade dos termos polinomiais a serem incluídos no modelo. Neste caso, estamos a incluir os termos quadráticos e cúbicos.
+
+A hipótese nula do teste de Ramsey RESET é que o modelo original está corretamente especificado. Como a H0 não é rejeitada para nenhum nível de significância estatística, não há evidências suficientes para concluir que o modelo esteja mal especificado.
+
+### Teste de estabilidade dos coeficientes
+
+A estabilidade dos coeficientes pode ser realizado com o teste CUSUM [@ploberger_cusum_1992]. Este teste verifica se os coeficientes do modelo permanecem constantes ao longo da amostra.
+
+No `R`:
+
+```{r}
+#| label: cusum_cusumsq
+
+#estimar modelo
+modelo <- lm(wage ~ educ + exper + tenure, data = wage2)
+
+# Teste CUSUM
+library(strucchange)
+
+# Teste CUSUMSQ
+sctest(modelo, type = "CUSUM")
+
+#graficamente
+plot(efp(modelo, data = wage2, type = "Rec-CUSUM"))
+```
+
+A hipótese nula do teste CUSUM é que os coeficientes são estáveis ao longo do tempo. H0 é rejeitada para 5% e 10%. A forma de apresentação mais comum é o gráfico onde é possível visualizar a estabilidade dos coeficientes ao longo da amostra, as linhas vermelhas representam os limites de significância de 5% e a preta representa a estatística do teste. Se a linha preta ultrapassar as linhas vermelhas, rejeitamos a hipótese nula de estabilidade.
+
+## Testes Gerais
+
+A biblioteca `performance` tem a função `check_model()` que realiza uma série de testes visuais para diagnosticar um modelo de regressão. Vamos utilizar o exemplo anterior, para dados seccionais, e executar a função:
+
+```{r}
+#| label: check_model3
+#| fig-height: 12      # Altura em polegadas
+#| fig-width: 8       # Largura em polegadas
+#| 
+#carregar bibliotecas
+library(wooldridge) 
+library(performance)
+
+#carregar dados
+data("wage2")
+
+#estimar modelo
+modelo <- lm(wage ~ educ + exper + tenure, data = wage2)
+
+#
+check_model(modelo, check = "all")
+```
+
+O resultado da função são 6 gráficos:
+
+1.  "Posterior Predictive Check": Verifica a distribuição dos valores previstos em relação aos valores observados.
+2.  "Linearity": Verifica a linearidade da relação entre as variáveis independentes e a variável dependente.
+3.  "Homogeneity of Variance": Verifica se a variância dos resíduos é constante (homocedasticidade).
+4.  "Influential Observations": Identifica observações que têm um impacto desproporcional na estimativa dos coeficientes do modelo.
+5.  "Colinearity": Verifica se há colinearidade entre as variáveis independentes.
+6.  "Normality of Residuals": Verifica se os resíduos seguem uma distribuição normal.
+
+A descrição completa de cada um deles pode ser verificada com `?performance::check_model`.
+
+O título de cada gráfico é autoexplicativo. No subtítulo de cada um deles está a informação adicional sobre o que deveríamos verificar para que o modelo seja adequada. Esta é uma ferramenta muito útil para ter uma visão geral do modelo e diagnosticar potenciais problemas.
+
+Para este modelo podemos concluir que:
+
+1.   O modelo captura bem a distribuição dos dados
+2.   A relação entre as variáveis independentes e a variável dependente aparenta ser linear, mas pode ser melhorada.
+3.   Poderá existir heterocedasticidade (é necessário fazer os testes)
+4.   Não existem observações influentes (o modelo está dentro das linhas de distância de Cook's)
+5.   Não há indícios de colinearidade entre as variáveis independentes.
+6.   Os resíduos não parecem seguir uma distribuição normal ( as observação deveriam estar em cima da linha verde)
+
+Agora um exemplo para séries temporais:
+
+```{r}
+#| label: check_model2
+#| fig-height: 12      # Altura em polegadas
+#| fig-width: 8       # Largura em polegadas
+#| 
+#carregar bibliotecas
+library(readxl) 
+library(performance)
+
+#carregar dados
+m_reg <- read_excel("m_reg.xlsx")
+
+#estimar modelo
+modelo_st <- lm(gdp ~ ind + agri + ser + man, data = m_reg)
+
+#
+check_model(modelo_st)
+```
+
+1.   O modelo captura bem a distribuição dos dados.
+2.   A relação entre as variáveis independentes e a variável dependente não aparenta ser linear, e por isso deve ser melhorada (exemplo: introduzir termos quadráticos ou interações).
+3.   Aparentemente existe heterocedasticidade.
+4.   Não existem observações influentes (o modelo está dentro das linhas de distância de Cook's).
+5.   Existem indícios de colinearidade entre as variáveis `ind`, `agri` e `ser`.
+6.   Os resíduos estão muito próximos de seguir uma distribuição normal.
+
+
+## Seleção de Modelos {#sec-selecao-modelos}
+
+Os modelos devem ser escolhidos com base na capacidade de previsão e na parcimónia (simplicidade). O primeiro passo é definir um conjunto de modelos candidatos, quer seja pela número de variáveis independentes, quer seja pela sua estrutura funcional.
+
+Para este exemplo vamos utilizar a base de dados `hprice3`.
+
+```{r}
+#| label: data_model_selection
+
+#carregar bibliotecas
+library(wooldridge)
+
+#carregar dados
+data("hprice3")
+```
+
+A comparação de modelos é essencial para garantir que escolhemos o modelo mais adequado para os nossos dados. Quando a variável dependente é a mesma, devemos ter em consideração, entre modelos, as trocas de sinais dos coeficientes, a significância estatística e o coeficiente de determinação ajustado.
+
+Vamos começar por estimar alguns modelos para explicar o preço das casas. E vamos compará-los com a função `stargazer` e com a função `tbl_regression`.
+
+```{r}
+#| label: model_selection
+
+# Estimar modelos
+modelo1 <- lm(price ~ area + rooms + age, 
+              data = hprice3)
+modelo2 <- lm(price ~ area + inst + rooms + age, 
+              data = hprice3)
+modelo3 <- lm(price ~ area + inst + rooms + age + I(inst^2), 
+              data = hprice3)
+modelo4 <- lm(price ~ area + inst + rooms + age + 
+              I(rooms^2) + I(age^2), 
+              data = hprice3)
+
+#comparar com stargazer
+stargazer(modelo1, modelo2, modelo3, modelo4, 
+          type = "text")
+
+#comparar com gtsummary
+library(gtsummary)
+
+tbl1 <- tbl_regression(modelo1) |> #converter
+        add_glance_source_note() #adiciona metricas
+tbl2 <- tbl_regression(modelo2) |> 
+        add_glance_source_note()
+tbl3 <- tbl_regression(modelo3) |> 
+        add_glance_source_note()
+tbl4 <- tbl_regression(modelo4) |> 
+        add_glance_source_note()
+
+tbl_merge(tbls=list(tbl1, tbl2, tbl3, tbl4),  #mostar modelos
+          tab_spanner = c("Modelo 1", "Modelo 2", 
+                        "Modelo 3", "Modelo 4"))
+```
+
+Numa primeira análise, podemos observar que que o coeficinete da `area` é consistente entre os modelos. Os coeficientes das variáveis `rooms` e `age` também sao bastante consistentes en termos de sinais. A introdução do termo quadrático de `inst` no modelo 3 faz com que o coeficiente de `inst` passe a ser estatisticamento diferente de zero. Este deve ser o primeiro passo para perceber a robustez dos coeficientes. Neste exemplo não houve uma razão específica para a escolha dos modelos, mas em situações reais, a escolha deve ser feita com base em teoria económica e conhecimento do domínio/tópico. Existem alguns critérios que podem ser utilizados para comparar modelos:
+
+### *All in*
+
+Neste método, todas as variáveis independentes disponíveis são incluídas no modelo. Este método é simples, mas pode levar a problemas de multicolinearidade e sobreajuste (*overfitting*). Este método exige *prior knowledge*. Um exemplo deste método é prever o risco de incumprimento de um empréstimo, onde todas as variáveis disponíveis sobre o cliente são incluídas no modelo, até para comprar o risco entre os vários clientes.
+
+Para exte exemplo vamos utilizar mais uma vez os dados `hprice3` e estimar um modelo com todas as variáveis disponíveis.
+
+```{r}
+#| label: all_in_model
+
+library(wooldridge)
+invisible(library(tidyverse))
+data("hprice3")
+
+#excluir variáveis transformadas
+hprice3 <- hprice3 |> 
+            select(-c(year,agesq, linst, ldist, 
+            lprice, larea, lland, linstsq))
+# Estimar modelo "all in"
+modelo_all_in <- lm(price ~ ., data = hprice3)
+summary(modelo_all_in)
+```
+
+O modelo "all in" pode ser útil como um ponto de partida, mas é importante considerar a parcimónia e a interpretabilidade do modelo. Nem sempre o modelo com mais variáveis será o melhor. Este método é o ponto de partida para o próximo método de seleção.
+
+### *Backward Elimination*
+
+A eliminação é um método de seleção de modelos que começa com um modelo completo e remove iterativamente as variáveis com menos informação. Para isso vamos recorrer à função `step()` da biblioteca `MASS`. Primeiro vamos estimar o modelo completo com todas as variáveis e depois aplicar o método de eliminação *backward*. Para a função `stepAIC()` vamos utilizar o argumento `object` que é o modelo completo, e o argumento `direction` que indica a direção da seleção, neste caso *backward*.
+
+```{r}
+#| label: backward_elimination
+
+# Estimar modelo completo
+modelo_completo <- lm(price ~ ., data = hprice3)
+# Aplicar backward elimination
+library(MASS)
+modelo_backward <- stepAIC(modelo_completo, 
+                        direction = "backward")
+summary(modelo_backward)
+```
+
+O modelo resultante d é mais simples e contém apenas as variáveis informação necessária. Este método é útil para reduzir a complexidade do modelo. Para este método, o critério de seleção padrão é o AIC (Critério de Informação de Akaike). A cada iteração, a variável que, quando removida, resulta na maior redução do AIC é eliminada do modelo. O processo continua até que a remoção de qualquer variável adicional não melhore o AIC.
+
+### *Forward Selection*
+
+A seleção *forward* é o oposto da eliminação *backward*. Começa com um modelo só com constante e é adiconada a variável com o valor P mais baixo do *all in*. É adicioanda uma variável de cada vez, em que variável só permanece no modelo se tiver informação suficiente. As variáveis são adicionadas até que nenhuma variável adicional melhore significativamente o modelo. Para este método vamos utilizar  o argumento `object` que é o modelo nulo, o argumento `direction` que indica a direção da seleção, neste caso *forward*, e o argumento `scope` que é o modelo completo. O `scope` define o limite superior do modelo que pode ser construído.
+
+```{r}
+#| label: forward_selection
+# Estimar modelo nulo
+modelo_nulo <- lm(price ~ 1, data = hprice3)
+# Aplicar forward selection
+library(MASS)
+modelo_forward <- stepAIC(modelo_nulo, 
+                      direction = "forward", 
+                      scope = formula(modelo_completo))
+summary(modelo_forward)
+```
+
+Neste modelo, existem duas variáveis que não são estatisticamente significativas, mas que foram incluídas no modelo porque melhoram o AIC. O facto de uma variável não ser estatisticamente significativa não significa que ela não tenha informação para explicar a dependente. A decisão de incluir ou excluir uma variável deve ser baseada em uma combinação de critérios estatísticos e conhecimento tórico.
+
+### *Stepwise Selection*
+
+A seleção *stepwise* combina os métodos *forward* e *backward*. Começa com um modelo nulo e adiciona variáveis como no método *forward*, mas também verifica se alguma variável já incluída no modelo pode ser removida, como no método *backward*. Este processo continua até que nenhuma variável adicional possa ser adicionada ou removida. Or argumento `object` é o modelo nulo, o argumento `direction` que indica a direção da seleção, neste caso *both*, e o argumento `scope` que é o modelo completo.
+
+```{r}
+#| label: step
+
+# Estimar modelo nulo
+modelo_nulo <- lm(price ~ 1, data = hprice3)
+# Aplicar stepwise selection
+library(MASS)
+modelo_stepwise <- stepAIC(modelo_nulo, direction = "both", scope = formula(modelo_completo))
+summary(modelo_stepwise)
+```
+
+### Seleção por Scores
+
+Os métodos de seleção de modelos podem ser comparados utilizando critérios de informação, como o AIC (Critério de Informação de Akaike) e o BIC (Critério de Informação Bayesiano). Estes critérios penalizam a complexidade do modelo, são muito úteis quando existem muitas variáveis disponíveis. 
+
+O AIC é mais flexível e tende a selecionar modelos mais complexos, enquanto o BIC é mais conservador e favorece modelos mais simples. O AIC é calculado:
+
+$$
+AIC = \ln\left(\frac{SSR}{n}\right) + \frac{2k}{n}
+$$ {#eq-aic}
+
+onde:
+-   $SSR$ é a soma dos quadrados dos resíduos do modelo,
+-   $n$ é o número de observações,
+-   $k$ é o número de parâmetros do modelo.
+
+Ou seja, o AIC penaliza o número de parâmetros no modelo (quanto maior o número de parâmetros, maior a penalização). O objetivo é minimizar o AIC, ou seja, escolher o modelo com o menor AIC.
+
+O BIC, também conhecido como Critério de Informação de Schwarz (SIC), é calculado como:
+
+$$
+BIC = \ln\left(\frac{SSR}{n}\right) + \frac{k \ln(n)}{n}
+$$ {#eq-bic}
+
+em que:
+-   $SSR$ é a soma dos quadrados dos resíduos do modelo,
+-   $n$ é o número de observações,
+-   $k$ é o número de parâmetros do modelo.
+
+Ou seja, o BIC penaliza o número de parâmetros no modelo, mas a penalização é mais acentuada do que no AIC, sobretudo em grandes amostras. O objetivo é minimizar o BIC, ou seja, escolher o modelo com o menor BIC.
+
+Para obter o AIC e o BIC de um modelo no `R` vamos utilizar a função `compare_performance()` da biblioteca `performance`. Para um modelo utilizamos a função `model_performance()`. Vamos estimar 2 modelos para efeitos de comparação:
+
+```{r}
+#| label: scores
+
+library(performance)
+
+modelo1 <- lm(price ~ area + rooms + age, 
+              data = hprice3)
+modelo2 <- lm(price ~ area + inst + rooms + age + I(inst^2), 
+              data = hprice3)
+
+compare_performance(modelo1, modelo2)
+```
+
+Obtemos bárias métricas:
+
+-   AIC: Critério de Informação de Akaike
+-   AICc: AIC corrigido para amostras pequenas
+-   BIC: Critério de Informação Bayesiano
+-   R2: Coeficiente de Determinação - mede a proporção da variabilidade na variável dependente que é explicada pelo modelo.
+-   R2 adj: Coeficiente de Determinação Ajustado - ajusta o R² para o número de variáveis independentes no modelo.
+-   RMSE: Raiz do Erro Quadrático Médio ($RMSE = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}$) - mede a média dos erros de previsão do modelo.
+-   Sigma: Estimativa do desvio padrão dos resíduos - mede a variabilidade dos resíduos do modelo.
+
+O objetivo é minimizar o AIC, BIC, RMSE e o Sigma. Enquanto que o R² e o R² ajustado devem ser maximizados. Neste exemplo, o modelo 2 é melhor em todas as métricas. A escolha entre os modelos deve considerar o trade-off entre a complexidade do modelo e a sua capacidade de prever a variável dependente.
+
+### Validação Cruzada
+
+A validação cruzada é uma técnica utilizada para avaliar a capacidade de previsão de um modelo. O objetivo é dividir os dados em subamostras de treino e de teste, onde o modelo é "treinado" no conjunto de treino e avaliado no conjunto de teste. Existem várias formas de realizar a validação cruzada, mas as mais comuns são a validação cruzada simples (hold-out) e a validação cruzada k-fold.
+
+A Validação Cruzada Simples (Hold-out) consiste em dividir os dados em duas partes: uma para treino e outra para teste. O modelo é "treinado"/estimado com a parte de treino e avaliado com a parte de teste. Esta abordagem é simples, mas muito sensível à forma de como os dados são divididos. Para dividir os dados recorresmos à biblioteca `caTools` com as funções `sample.split()` para definir a proporção, e `subset()` para criar os conjuntos de treino e teste. Para os dados `wage3` vamos utilizar 70% dos dados para treino e 30% para teste.
+
+```{r}
+#| label: holdout_cv
+
+#dados
+library(wooldridge)
+data("wage2")
+
+#separar dados treino e teste
+library(caTools)
+
+split <- sample.split(wage2$wage, SplitRatio = 0.7)
+dados_treino <- subset(wage2, split == TRUE)
+dados_teste <- subset(wage2, split == FALSE)
+```
+
+Estimar um modelo para com dados de treino e fazemos uma previão com os dados de teste, mas recorremos ao modelo de treino. A métrica mais comum para avaliar a capacidade de previsão é o RMSE (Root Mean Squared Error).
+
+```{r}
+#| label: holdout_cv2
+
+# Estimar modelo nos dados de treino
+modelo_treino <- lm(wage ~ educ + exper + tenure, data = dados_treino)
+
+# Prever valores nos dados de teste com o modelo de treino
+previsoes <- predict(modelo_treino, newdata = dados_teste)
+# Calcular RMSE
+rmse <- sqrt(mean((dados_teste$wage - previsoes)^2))
+rmse
+```
+
+Obtivemos um RMSE de 384.199, o que significa que, em média, as previsões do modelo estão a 384.199 unidades do valor real da variável dependente `wage`. Este valor pode ser comparado com a média da variável dependente para ter uma ideia da precisão do modelo.
+
+```{r}
+mean_wage<-mean(wage2$wage)
+
+rmse / mean_wage
+```
+
+Como a média de `wage` é 957.9455, o RMSE representa aproximadamente 39% da média, o que indica que o modelo tem uma capacidade de previsão moderada.
+
+Também podemos comparar graficamente o modelo nas duas subamostras:
+
+```{r}
+#| label: holdout_cv3
+library(ggplot2)
+
+# Criar data frame combinando dados de treino e teste
+dados_plot <- data.frame(
+  Valores_Reais = c(dados_treino$wage, dados_teste$wage),
+  Previsão = c(predict(modelo_treino, newdata = dados_treino), previsoes),
+  Amostras = c(rep("Treino", nrow(dados_treino)), rep("Teste", nrow(dados_teste)))
+)
+
+ggplot(dados_plot, aes(x = Valores_Reais, y = Previsão, color = Amostras)) +
+  geom_point(alpha = 0.7, size = 5.5) +
+  scale_color_manual(values = c("Treino" = "steelblue", "Teste" = "coral")) +
+  geom_abline(intercept = 0, slope = 1, colour = "black", linetype = "dashed", size = 2) +
+  labs(title = "Comparação da Previsão: Treino vs Teste",
+       x = "Valores Reais (wage)",
+       y = "Previsões do Modelo",
+       color = "Amostras") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+        axis.title = element_text(size = 12),
+        panel.grid.minor = element_blank(),
+        legend.position = "bottom")
+```
+
+### Validação Cruzada k-Fold
+
+A validação cruzada k-fold é uma técnica mais robusta do que a validação cruzada simples. Consiste em dividir os dados em k subamostras (folds). O modelo é "treinado" em k-1 *folds* e testado no *fold* restante. Este processo é repetido k vezes, cada vez com um fold diferente como conjunto de teste. A métrica de avaliação (por exemplo, RMSE) é então calculada como a média das métricas obtidas em cada iteração.
+
+Para este exemplo vamos utilizar a biblioteca `caret` que tem uma função específica para realizar a validação cruzada k-fold. Vamos definir o número de folds (k) e utilizar a função `trainControl()` para configurar a validação cruzada. Depois, utilizamos a função `train()` para estimar o modelo com validação cruzada.
+
+```{r}
+#| label: kfold_cv
+#carregar bibliotecas
+library(caret)
+# Definir controle de treino com validação cruzada k-fold
+controle_treino <- trainControl(method = "cv", number = 10) # 10-fold CV
+# Estimar modelo com validação cruzada k-fold
+modelo_kfold <- train(wage ~ educ + exper + tenure, 
+                      data = wage2, 
+                      method = "lm", 
+                      trControl = controle_treino)
+# Resultados do modelo
+print(modelo_kfold)
+# RMSE médio
+modelo_kfold$results$RMSE
+# R² médio
+modelo_kfold$results$Rsquared
+```
+
+Os valores de RMSE e R² apresentados são a média dos valores obtidos em cada uma das 10 iterações da validação cruzada. O RMSE médio é 372.959, o que indica que, em média, as previsões do modelo estão a 372.959 unidades do valor real da variável dependente `wage`. O R² médio é 0.1487, o que significa que, em média, o modelo explica aproximadamente 14.87% da variabilidade na variável dependente `wage`. Provavelmente o modelo pode ser melhorado, seja com a introdução de novas variáveis, seja com a alteração da forma funcional. No próximo capítulo vamos abordar algumas extensões do modeli de regressão linear que podem ajudar a melhorar a capacidade de previsão dos modelos.
